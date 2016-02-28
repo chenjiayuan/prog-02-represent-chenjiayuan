@@ -5,23 +5,28 @@ package chenjiayuan.represent;
  */
 public class Representative {
     private String name;
+    private String role;
     private String party;
     private String email;
     private String website;
     private String lastTweet;
+    private String term;
 
-    public Representative(String name, String party, String email, String website, String lastTweet) {
+    public Representative(String name, String role, String party, String email, String website, String lastTweet, String term) {
         super();
         this.name = name;
+        this.role = role;
         this.party = party;
         this.email = email;
         this.website = website;
         this.lastTweet = lastTweet;
+        this.term = term;
     }
 
     public String getName() {
         return name;
     }
+    public String getRole() { return role; }
     public String getParty() {
         return party;
     }
@@ -33,6 +38,9 @@ public class Representative {
     }
     public String getLastTweet() {
         return lastTweet;
+    }
+    public String getTerm() {
+        return term;
     }
 }
 /*

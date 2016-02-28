@@ -1,5 +1,7 @@
 package chenjiayuan.represent;
 
+import android.content.Intent;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.ArrayList;
@@ -9,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,21 +26,21 @@ public class CongressionalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congressional);
 
-        populateCarList();
+        populateRepList();
         populateListView();
         registerClickCallback();
     }
 
-    private void populateCarList() {
-        reps.add(new Representative("1", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("2", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("3", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("4", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("5", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("6", "party", "email", "website", "lastTweet"));
-        reps.add(new Representative("7", "party", "email", "website", "lastTweet"));
+    //fake data populator
+    private void populateRepList() {
+        reps.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
+        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
+        reps.add(new Representative("Harrison Barnes", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
+        reps.add(new Representative("Andrew Bogut", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
+        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
     }
 
+    //populate the list view
     private void populateListView() {
         ArrayAdapter<Representative> adapter = new MyListAdapter();
         ListView list = (ListView) findViewById(R.id.repListView);
@@ -58,6 +62,7 @@ public class CongressionalActivity extends AppCompatActivity {
         });
     }
 
+    //adapter that manage the content of the list view
     private class MyListAdapter extends ArrayAdapter<Representative> {
         public MyListAdapter() {
             super(CongressionalActivity.this, R.layout.item_view, reps);
@@ -66,29 +71,37 @@ public class CongressionalActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
+
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
+
             }
 
             Representative r = reps.get(position);
-
             // Fill the view
             //ImageView imageView = (ImageView)itemView.findViewById(R.id.item_icon);
             //imageView.setImageResource(currentCar.getIconID());
-
-            // Make:
-            TextView makeText = (TextView) itemView.findViewById(R.id.item_txtMake);
-            makeText.setText(r.getName());
-
-            // Year:
-            TextView yearText = (TextView) itemView.findViewById(R.id.item_txtYear);
-            yearText.setText("" + r.getEmail());
-
-            // Condition:
-            TextView condionText = (TextView) itemView.findViewById(R.id.item_txtCondition);
-            condionText.setText(r.getWebsite());
-
+            TextView nameText = (TextView) itemView.findViewById(R.id.name);
+            nameText.setText(r.getName());
+            TextView roleText = (TextView) itemView.findViewById(R.id.role);
+            roleText.setText(r.getRole());
+            TextView partyText = (TextView) itemView.findViewById(R.id.party);
+            partyText.setText(r.getParty());
+            TextView emailText = (TextView) itemView.findViewById(R.id.email);
+            emailText.setText(r.getEmail());
+            TextView webText = (TextView) itemView.findViewById(R.id.website);
+            webText.setText(r.getWebsite());
+            //TextView tweetText = (TextView) itemView.findViewById(R.id.tweet);
+            //tweetText.setText(r.getLastTweet());
             return itemView;
+        }
+    }
+
+    //click on "more info button"
+    public void detailClickHandler(View view) {
+        if (view.getId() == R.id.moreInfoButton) {
+            Intent intent = new Intent(this, DetailActivity.class);
+            startActivity(intent);
         }
     }
 }

@@ -3,4 +3,16 @@
     <string name="title">2016 Presidential Election</string>
     <string name="go">search</string>
     <string name="congressional">congressional view</string>
+    <string name="loc">zipcode: 94608</string>
+    <string name="ppl">2 Senators and 2 representative found</string>
+    <string name="name">Stephen Curry</string>
+    <string name="role">Senator</string>
+    <string name="party">Republican</string>
+    <string name="email">stephen@curry.com</string>
+    <string name="website">stephencurry.com</string>
+    <string name="term">Term End Date: 9/1/2017</string>
+    <string name="location">Emeryville, CA</string>
+    <string name="tweet">What a great weekend here for #NBAllStarTO. Thanks to the fans, always grateful to be here because of you. #JBLAllStar #StephenCurry</string>
+    <string name="committees">1. Agriculture, Nutrition and Forestry\n2. Appropriations\n3. Banking, Housing, and Urban Affairs\n4. Commerce, Science, and Transportation</string>
+    <string name="bills">1/1/2009 - Golden State Warriors\n1/1/2010 - Golden State Warriors\n1/1/2011 - Golden State Warriors\n1/1/2012 - Golden State Warriors\n1/1/2013 - Golden State Warriors\n1/1/2014 - Golden State Warriors\n1/1/2015 - Golden State Warriors</string>
 </resources>
