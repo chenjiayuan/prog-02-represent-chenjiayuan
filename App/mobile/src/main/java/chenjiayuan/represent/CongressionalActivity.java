@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,16 +31,33 @@ public class CongressionalActivity extends AppCompatActivity {
         } else { //current location
             location.setText(intent.getStringExtra("location"));
         }
-        populateRepList();
+
+        //demo purpose
+        if (intent.getStringExtra("mode").equals("zipcode")) {
+            populateRepList();
+        } else {
+            populateRepListRandom();
+        }
         populateListView();
         registerClickCallback();
     }
 
     //fake data populator
     private void populateRepList() {
-        reps.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
-        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/2/2017"));
-        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/3/2017"));
+        reps.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.curry));
+        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.tompson));
+        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.green));
+    }
+    private void populateRepListRandom() {
+        reps.add(new Representative("Lebron James", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.james));
+        reps.add(new Representative("Kyrie Irving", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.irving));
+        reps.add(new Representative("Kevin Love", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
+                "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.love));
     }
 
     //populate the list view
@@ -81,13 +99,14 @@ public class CongressionalActivity extends AppCompatActivity {
                     intent.putExtra("party", r.getParty());
                     intent.putExtra("term", r.getTerm());
                     intent.putExtra("role", r.getRole());
+                    intent.putExtra("picID", Integer.toString(r.getPic()));
                     startActivity(intent);
                 }
             });
 
             // Fill the view
-            //ImageView imageView = (ImageView)itemView.findViewById(R.id.item_icon);
-            //imageView.setImageResource(currentCar.getIconID());
+            ImageView imageView = (ImageView)itemView.findViewById(R.id.profile_pic);
+            imageView.setImageResource(r.getPic());
             TextView nameText = (TextView) itemView.findViewById(R.id.name);
             nameText.setText(r.getName());
             TextView roleText = (TextView) itemView.findViewById(R.id.role);

@@ -16,7 +16,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:background="@android:color/darker_gray"
+        android:background="@android:color/white"
+        android:scaleType="fitXY"
          />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="180dp"
@@ -47,12 +48,14 @@
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/email" />
+            android:text="@string/email"
+            android:textColor="@android:color/holo_blue_dark"/>
         <TextView
             android:id="@+id/website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/website" />
+            android:text="@string/website"
+            android:textColor="@android:color/holo_blue_dark"/>
     </LinearLayout>
 
     <Button

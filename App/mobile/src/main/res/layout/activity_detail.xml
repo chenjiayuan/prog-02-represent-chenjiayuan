@@ -16,7 +16,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:background="@android:color/darker_gray"
+        android:background="@android:color/white"
         />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="180dp"
@@ -81,6 +81,7 @@
             android:layout_width="match_parent"
             android:textColor="@android:color/white"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="Recent Bills Sponsored" />
         <TextView
             android:layout_width="match_parent"

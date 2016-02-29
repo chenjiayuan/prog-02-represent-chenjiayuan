@@ -1,24 +1,13 @@
 package chenjiayuan.represent;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 public class MainActivity extends AppCompatActivity {
 

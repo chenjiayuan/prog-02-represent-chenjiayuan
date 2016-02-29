@@ -1,12 +1,10 @@
 package chenjiayuan.represent;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -24,6 +22,8 @@ public class DetailActivity extends AppCompatActivity {
         TextView partyText = (TextView) findViewById(R.id.party);
         partyText.setText(intent.getStringExtra("party"));
         TextView termText = (TextView) findViewById(R.id.term);
-        termText.setText(intent.getStringExtra("term"));
+        termText.setText("Term End Date: " + intent.getStringExtra("term"));
+        ImageView profilePic = (ImageView) findViewById(R.id.profile_pic);
+        profilePic.setImageResource(Integer.parseInt(intent.getStringExtra("picID")));
     }
 }

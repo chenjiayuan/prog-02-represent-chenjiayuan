@@ -11,8 +11,10 @@ public class Representative {
     private String website;
     private String lastTweet;
     private String term;
+    private int picID;
 
-    public Representative(String name, String role, String party, String email, String website, String lastTweet, String term) {
+    public Representative(String name, String role, String party, String email,
+                          String website, String lastTweet, String term, int picID) {
         super();
         this.name = name;
         this.role = role;
@@ -21,6 +23,7 @@ public class Representative {
         this.website = website;
         this.lastTweet = lastTweet;
         this.term = term;
+        this.picID = picID;
     }
 
     public String getName() {
@@ -41,6 +44,9 @@ public class Representative {
     }
     public String getTerm() {
         return term;
+    }
+    public int getPic() {
+        return picID;
     }
 }
 /*
