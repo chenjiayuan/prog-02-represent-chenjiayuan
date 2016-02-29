@@ -80,7 +80,7 @@
             android:src="@drawable/twitter"
             android:layout_marginTop="170dp"
             android:paddingTop="10dp"/>
-        d<TextView
+        <TextView
             android:id="@+id/tweet"
             android:layout_width="wrap_content"
             android:layout_height="60dp"

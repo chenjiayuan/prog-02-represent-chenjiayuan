@@ -7,6 +7,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +27,13 @@ public class CongressionalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congressional);
 
+        TextView location = (TextView) findViewById(R.id.loc);
+        Intent intent = getIntent();
+        if (intent.getStringExtra("mode").equals("zipcode")) { //zipcode
+            location.setText("Zipcode " + intent.getStringExtra("zipcode"));
+        } else { //current location
+            location.setText(intent.getStringExtra("location"));
+        }
         populateRepList();
         populateListView();
         registerClickCallback();
@@ -34,10 +42,10 @@ public class CongressionalActivity extends AppCompatActivity {
     //fake data populator
     private void populateRepList() {
         reps.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
-        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
-        reps.add(new Representative("Harrison Barnes", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
-        reps.add(new Representative("Andrew Bogut", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
-        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/1/2017"));
+        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/2/2017"));
+        reps.add(new Representative("Harrison Barnes", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/3/2017"));
+        reps.add(new Representative("Andrew Bogut", "Senator", "Democrat", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/4/2017"));
+        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu", "chenjiayuan.com", "lastTweet", "9/5/2017"));
     }
 
     //populate the list view
@@ -53,11 +61,6 @@ public class CongressionalActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
-
-                Representative selectedRep = reps.get(position);
-                String message = "You clicked position " + position
-                        + " Whose name is " + selectedRep.getName();
-                Toast.makeText(CongressionalActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -71,13 +74,23 @@ public class CongressionalActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
-
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
-
             }
+            Button btn = (Button) itemView.findViewById(R.id.moreInfoButton);
+            final Representative r = reps.get(position);
+            btn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Log.d("T", "in onconnected");
+                    Intent intent = new Intent(CongressionalActivity.this, DetailActivity.class);
+                    intent.putExtra("name", r.getName());
+                    intent.putExtra("party", r.getParty());
+                    intent.putExtra("term", r.getTerm());
+                    intent.putExtra("role", r.getRole());
+                    startActivity(intent);
+                }
+            });
 
-            Representative r = reps.get(position);
             // Fill the view
             //ImageView imageView = (ImageView)itemView.findViewById(R.id.item_icon);
             //imageView.setImageResource(currentCar.getIconID());
@@ -94,14 +107,6 @@ public class CongressionalActivity extends AppCompatActivity {
             //TextView tweetText = (TextView) itemView.findViewById(R.id.tweet);
             //tweetText.setText(r.getLastTweet());
             return itemView;
-        }
-    }
-
-    //click on "more info button"
-    public void detailClickHandler(View view) {
-        if (view.getId() == R.id.moreInfoButton) {
-            Intent intent = new Intent(this, DetailActivity.class);
-            startActivity(intent);
         }
     }
 }

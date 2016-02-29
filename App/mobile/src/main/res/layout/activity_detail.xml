@@ -51,7 +51,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/moreInfoButton"
+        android:id="@+id/term"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:onClick="detailClickHandler"

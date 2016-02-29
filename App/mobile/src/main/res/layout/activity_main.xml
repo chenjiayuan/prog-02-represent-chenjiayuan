@@ -30,25 +30,28 @@
         android:layout_width="wrap_content"
         android:orientation="horizontal"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:id="@+id/relativeLayout">
 
         <Button
-            android:layout_width="160dp"
+            android:layout_width="165dp"
             android:layout_height="70dp"
             android:text="Use\nZipcode"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
+            android:onClick="zipcodeOptionClicked"
             android:id="@+id/use_zipcode" />
 
         <Button
-            android:layout_width="160dp"
+            android:layout_width="165dp"
             android:layout_height="70dp"
             android:text="Use\nCurrent Location"
+            android:onClick="locationOptionClicked"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:id="@+id/use_location" />
-
     </RelativeLayout>
+
 
     <Button
         android:id="@+id/searchButton"
@@ -62,6 +65,32 @@
         android:background="@android:color/holo_green_dark"
         android:layout_alignParentBottom="true"/>
 
+    <ImageView
+        android:layout_above="@id/searchButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:id="@+id/imageView"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="30dp"
+        android:src="@drawable/ic_location_city_black_48dp" />
 
+    <EditText
+        android:id="@+id/zip_option"
+        android:layout_height="50dp"
+        android:layout_width="200dp"
+        android:layout_marginTop="340dp"
+        android:layout_marginLeft="120dp"
+        android:hint="enter zipcode"
+        android:textSize="20dp"/>
 
+    <TextView
+        android:id="@+id/location_option"
+        android:clickable="true"
+        android:layout_height="50dp"
+        android:textSize="20dp"
+        android:layout_width="200dp"
+        android:layout_marginTop="340dp"
+        android:layout_marginLeft="120dp"
+        android:onClick="TextViewClicked"
+        android:text="Current Location:\nEmeryville, CA" />
 </RelativeLayout>
