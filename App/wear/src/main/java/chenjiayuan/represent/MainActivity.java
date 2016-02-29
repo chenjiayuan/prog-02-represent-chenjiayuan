@@ -1,8 +1,8 @@
 package chenjiayuan.represent;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.wearable.view.GridViewPager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -16,6 +16,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
+        pager.setAdapter(new SampleGridPagerAdapter(this, getFragmentManager()));
 //        mFeedBtn = (Button) findViewById(R.id.detailButton);
 //
 //        Intent intent = getIntent();
