@@ -41,14 +41,24 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
         }
     }
     // Create a static set of pages in a 2D array
+//    private final Page[][] PAGES = {
+//            {
+//                    new Page(R.string.name1, R.string.party1, 0),
+//                    new Page(R.string.name2, R.string.party2, 0),
+//                    new Page(R.string.name3, R.string.party3, 0),
+//            },
+//            {
+//                    new Page(R.string.title2012, R.string.stat, 0)
+//            }
+//    };
     private final Page[][] PAGES = {
             {
-                    new Page(R.string.name1, R.string.party1, 0),
-                    new Page(R.string.name2, R.string.party2, 0),
-                    new Page(R.string.name3, R.string.party3, 0),
+                    new Page(R.string.name11, R.string.party11, 0),
+                    new Page(R.string.name22, R.string.party22, 0),
+                    new Page(R.string.name33, R.string.party33, 0),
             },
             {
-                    new Page(R.string.title2012, R.string.stat, 0)
+                    new Page(R.string.title20122, R.string.stat2, 0)
             }
     };
 
@@ -82,11 +92,11 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
     @Override
     public Drawable getBackgroundForPage(int row, int column) {
         if( row == 0 && column == 0) {
-            return mContext.getResources().getDrawable(R.drawable.curry, null);
+            return mContext.getResources().getDrawable(R.drawable.james, null);
         } else if (row == 0 && column == 1) {
-            return mContext.getResources().getDrawable(R.drawable.tompson, null);
+            return mContext.getResources().getDrawable(R.drawable.irving, null);
         } else if (row == 0 && column == 2) {
-            return mContext.getResources().getDrawable(R.drawable.green, null);
+            return mContext.getResources().getDrawable(R.drawable.love, null);
         } else if (row == 1 && column == 0) {
             return mContext.getResources().getDrawable(R.drawable.obama, null);
         } else {
