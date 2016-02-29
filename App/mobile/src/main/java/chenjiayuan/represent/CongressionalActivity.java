@@ -95,6 +95,7 @@ public class CongressionalActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Log.d("T", "in onconnected");
                     Intent intent = new Intent(CongressionalActivity.this, DetailActivity.class);
+                    //TODO: use bundle instead
                     intent.putExtra("name", r.getName());
                     intent.putExtra("party", r.getParty());
                     intent.putExtra("term", r.getTerm());

@@ -29,7 +29,6 @@ public class PhoneToWatchService extends Service {
                     @Override
                     public void onConnected(Bundle connectionHint) {
                     }
-
                     @Override
                     public void onConnectionSuspended(int cause) {
                     }
@@ -45,26 +44,21 @@ public class PhoneToWatchService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Which cat do we want to feed? Grab this info from INTENT
-        // which was passed over when we called startService
         Bundle extras = intent.getExtras();
-        final String info = extras.getString("info");
+        final String mode = extras.getString("mode");
 
-        // Send the message with the cat name
+        // Send the message with the mode
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //first, connect to the apiclient
                 mApiClient.connect();
-                //now that you're connected, send a massage with the cat name
-                sendMessage("/" + info, info);
+                sendMessage("/" + mode, mode); //mode = "zipcode" or "currentLocation"
             }
         }).start();
-
         return START_STICKY;
     }
 
-    @Override //remember, all services need to implement an IBiner
+    @Override //remember, all services need to implement an IBinder
     public IBinder onBind(Intent intent) {
         return null;
     }

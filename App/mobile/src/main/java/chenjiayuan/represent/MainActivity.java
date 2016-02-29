@@ -33,13 +33,14 @@ public class MainActivity extends AppCompatActivity {
         if (view.getId() == R.id.searchButton) {
             Intent intent;
             intent = new Intent(this, CongressionalActivity.class);
+            //TODO: use bundle instead
             intent.putExtra("mode", mode);
             intent.putExtra("location", location.getText().toString());
             intent.putExtra("zipcode", zipcode.getText().toString());
             startActivity(intent);
 
             Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-            watchIntent.putExtra("info", "Fred");
+            watchIntent.putExtra("mode", mode); //mode = "zipcode" or "currentLocation"
             startService(watchIntent);
         }
     }

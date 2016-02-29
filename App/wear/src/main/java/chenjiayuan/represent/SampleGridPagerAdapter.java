@@ -19,7 +19,7 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
     private final Context mContext;
     private List mRows;
 
-    public SampleGridPagerAdapter(Context ctx, FragmentManager fm) {
+    public SampleGridPagerAdapter(Context ctx, FragmentManager fm, String mode) {
         super(fm);
         mContext = ctx;
     }
@@ -41,26 +41,26 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
         }
     }
     // Create a static set of pages in a 2D array
-//    private final Page[][] PAGES = {
-//            {
-//                    new Page(R.string.name1, R.string.party1, 0),
-//                    new Page(R.string.name2, R.string.party2, 0),
-//                    new Page(R.string.name3, R.string.party3, 0),
-//            },
-//            {
-//                    new Page(R.string.title2012, R.string.stat, 0)
-//            }
-//    };
     private final Page[][] PAGES = {
             {
-                    new Page(R.string.name11, R.string.party11, 0),
-                    new Page(R.string.name22, R.string.party22, 0),
-                    new Page(R.string.name33, R.string.party33, 0),
+                    new Page(R.string.name1, R.string.party1, 0),
+                    new Page(R.string.name2, R.string.party2, 0),
+                    new Page(R.string.name3, R.string.party3, 0),
             },
             {
-                    new Page(R.string.title20122, R.string.stat2, 0)
+                    new Page(R.string.title2012, R.string.stat, 0)
             }
     };
+//    private final Page[][] PAGES = {
+//            {
+//                    new Page(R.string.name11, R.string.party11, 0),
+//                    new Page(R.string.name22, R.string.party22, 0),
+//                    new Page(R.string.name33, R.string.party33, 0),
+//            },
+//            {
+//                    new Page(R.string.title20122, R.string.stat2, 0)
+//            }
+//    };
 
     // Override methods in FragmentGridPagerAdapter
     // Obtain the UI fragment at the specified position
