@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class PhoneListenerService extends WearableListenerService {
 
     private static final String SHAKE = "/shake";
+    private static final String SELECT = "/select";
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
@@ -28,6 +29,34 @@ public class PhoneListenerService extends WearableListenerService {
             randomIntent.putExtra("location", "Random location: Atlanta, GA");
             randomIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(randomIntent);
+        } else if (messageEvent.getPath().equalsIgnoreCase(SELECT)) {
+            // Value contains the String we sent over in WatchToPhoneService, "good job"
+            String value = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+
+            System.out.println(value);
+            Intent indexActivity = new Intent(this, DetailActivity.class);
+            //TODO: demo purpose
+            if (value.equals("0")) {
+                indexActivity.putExtra("name", "Stephen Curry");
+                indexActivity.putExtra("party", "Republican");
+                indexActivity.putExtra("term", "9/1/2017");
+                indexActivity.putExtra("role", "Senator");
+                indexActivity.putExtra("picID", Integer.toString(R.drawable.curry));
+            } else if (value.equals("1")) {
+                indexActivity.putExtra("name", "Klay Thompson");
+                indexActivity.putExtra("party", "Democrat");
+                indexActivity.putExtra("term", "9/2/2017");
+                indexActivity.putExtra("role", "Senator");
+                indexActivity.putExtra("picID", Integer.toString(R.drawable.tompson));
+            } else {
+                indexActivity.putExtra("name", "Draymond Green");
+                indexActivity.putExtra("party", "Republican");
+                indexActivity.putExtra("term", "9/3/2017");
+                indexActivity.putExtra("role", "Representative");
+                indexActivity.putExtra("picID", Integer.toString(R.drawable.green));
+            }
+            indexActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            startActivity(indexActivity);
         } else {
             super.onMessageReceived( messageEvent );
         }

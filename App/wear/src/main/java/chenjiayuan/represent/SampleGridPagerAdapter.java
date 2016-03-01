@@ -5,7 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.wearable.view.CardFragment;
-import android.support.wearable.view.FragmentGridPagerAdapter;
+    import android.support.wearable.view.FragmentGridPagerAdapter;
 import android.support.wearable.view.GridPagerAdapter;
 import android.view.Gravity;
 

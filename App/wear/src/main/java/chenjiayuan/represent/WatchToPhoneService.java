@@ -25,6 +25,7 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
     private GoogleApiClient mWatchApiClient;
     private List<Node> nodes = new ArrayList<>();
     private String mode = "";
+    private String index = "";
 
     @Override
     public void onCreate() {
@@ -47,11 +48,12 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         Log.d("T", "onStartCommand");
         Bundle extras = intent.getExtras();
         mode = extras.getString("mode");
+        index = extras.getString("index");
         Log.d("T", "received mode: " + mode);
         //and actually connect it
         mWatchApiClient.connect();
         Log.d("T", "mWatchApiClient.connect() called");
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                         Log.d("T", "found nodes");
                         //when we find a connected node, we populate the list declared above
                         //finally, we can send a message
-                        sendMessage("/" + mode, mode); // ('/shake', 'shake')
+                        sendMessage("/" + mode, index); // ('/shake', 'shake')
                         Log.d("T", "sent");
                     }
                 });
