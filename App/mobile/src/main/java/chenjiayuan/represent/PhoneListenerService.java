@@ -26,6 +26,7 @@ public class PhoneListenerService extends WearableListenerService {
             //TODO: use bundle instead
             randomIntent.putExtra("mode", "currentLocation");
             randomIntent.putExtra("location", "Random location: Atlanta, GA");
+            randomIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(randomIntent);
         } else {
             super.onMessageReceived( messageEvent );

@@ -38,11 +38,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("location", location.getText().toString());
             intent.putExtra("zipcode", zipcode.getText().toString());
             startActivity(intent);
-
-            //start watch
-            Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-            watchIntent.putExtra("mode", mode); //mode = "zipcode" or "currentLocation"
-            startService(watchIntent);
         }
     }
 

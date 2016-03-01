@@ -33,6 +33,13 @@ public class CongressionalActivity extends AppCompatActivity {
             location.setText(intent.getStringExtra("location"));
         }
 
+//        Log.d("T", "arrived arrived arrived arrived");
+//        //start watch
+//        Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
+//        watchIntent.putExtra("mode", intent.getStringExtra("mode")); //mode = "zipcode" or "currentLocation"
+//        startService(watchIntent);
+//        Log.d("T", "watch started started started started");
+
         //demo purpose
         if (intent.getStringExtra("mode").equals("zipcode")) {
             populateRepList();
