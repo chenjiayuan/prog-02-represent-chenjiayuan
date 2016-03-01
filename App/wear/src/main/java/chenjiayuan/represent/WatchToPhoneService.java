@@ -23,11 +23,14 @@ import java.util.Set;
 
 /**
  * Created by chenjiayuan on 2/27/16.
- */
+**/
+
+
 public class WatchToPhoneService extends Service implements GoogleApiClient.ConnectionCallbacks {
 
     private GoogleApiClient mWatchApiClient;
     private List<Node> nodes = new ArrayList<>();
+    private String mode = "";
 
     @Override
     public void onCreate() {
@@ -38,7 +41,6 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                 .addConnectionCallbacks(this)
                 .build();
         //and actually connect it
-        mWatchApiClient.connect();
     }
 
     @Override
@@ -48,15 +50,24 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("T", "onStartCommand");
+        Bundle extras = intent.getExtras();
+        mode = extras.getString("mode");
+        //and actually connect it
+        mWatchApiClient.connect();
+
+        return START_STICKY;
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
     @Override //alternate method to connecting: no longer create this in a new thread, but as a callback
     public void onConnected(Bundle bundle) {
-        final String mode = bundle.getString("mode");
-
-        Log.d("T", "mode received" + mode);
+        Log.d("T", "in onconnected");
         Wearable.NodeApi.getConnectedNodes(mWatchApiClient)
                 .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
                     @Override
@@ -65,7 +76,7 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                         Log.d("T", "found nodes");
                         //when we find a connected node, we populate the list declared above
                         //finally, we can send a message
-                        sendMessage("/send_toast", "Good job!");
+                        sendMessage("/send_toast", mode);
                         Log.d("T", "sent");
                     }
                 });
@@ -80,4 +91,5 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                     mWatchApiClient, node.getId(), path, text.getBytes());
         }
     }
+
 }
