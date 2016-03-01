@@ -8,7 +8,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.view.GridViewPager;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -51,13 +50,13 @@ public class MainActivity extends Activity {
         });
     }
 
-    public void buttonClickHandler(View view) {
-        if (view.getId() == R.id.button) {
-            Intent intent = new Intent(getBaseContext(), WatchToPhoneService.class);
-            intent.putExtra("mode", "Hello_World");
-            startService(intent);
-        }
-    }
+//    public void buttonClickHandler(View view) {
+//        if (view.getId() == R.id.button) {
+//            Intent intent = new Intent(getBaseContext(), WatchToPhoneService.class);
+//            intent.putExtra("mode", "Hello_World");
+//            startService(intent);
+//        }
+//    }
 
     @Override
     public void onResume() {

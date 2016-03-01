@@ -25,6 +25,7 @@ public class CongressionalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_congressional);
 
         TextView location = (TextView) findViewById(R.id.loc);
+
         Intent intent = getIntent();
         if (intent.getStringExtra("mode").equals("zipcode")) { //zipcode
             location.setText("Zipcode " + intent.getStringExtra("zipcode"));
