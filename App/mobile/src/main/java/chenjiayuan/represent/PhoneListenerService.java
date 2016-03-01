@@ -36,25 +36,33 @@ public class PhoneListenerService extends WearableListenerService {
             System.out.println(value);
             Intent indexActivity = new Intent(this, DetailActivity.class);
             //TODO: demo purpose
-            if (value.equals("0")) {
-                indexActivity.putExtra("name", "Stephen Curry");
-                indexActivity.putExtra("party", "Republican");
-                indexActivity.putExtra("term", "9/1/2017");
-                indexActivity.putExtra("role", "Senator");
-                indexActivity.putExtra("picID", Integer.toString(R.drawable.curry));
-            } else if (value.equals("1")) {
-                indexActivity.putExtra("name", "Klay Thompson");
-                indexActivity.putExtra("party", "Democrat");
-                indexActivity.putExtra("term", "9/2/2017");
-                indexActivity.putExtra("role", "Senator");
-                indexActivity.putExtra("picID", Integer.toString(R.drawable.tompson));
-            } else {
-                indexActivity.putExtra("name", "Draymond Green");
-                indexActivity.putExtra("party", "Republican");
-                indexActivity.putExtra("term", "9/3/2017");
-                indexActivity.putExtra("role", "Representative");
-                indexActivity.putExtra("picID", Integer.toString(R.drawable.green));
-            }
+            Representative r = PeopleData.people.get(Integer.parseInt(value));
+            indexActivity.putExtra("name", r.getName());
+            indexActivity.putExtra("party", r.getParty());
+            indexActivity.putExtra("term", r.getTerm());
+            indexActivity.putExtra("role", r.getRole());
+            indexActivity.putExtra("picID", Integer.toString(r.getPic()));
+//
+//
+//            if (value.equals("0")) {
+//                indexActivity.putExtra("name", "Stephen Curry");
+//                indexActivity.putExtra("party", "Republican");
+//                indexActivity.putExtra("term", "9/1/2017");
+//                indexActivity.putExtra("role", "Senator");
+//                indexActivity.putExtra("picID", Integer.toString(R.drawable.curry));
+//            } else if (value.equals("1")) {
+//                indexActivity.putExtra("name", "Klay Thompson");
+//                indexActivity.putExtra("party", "Democrat");
+//                indexActivity.putExtra("term", "9/2/2017");
+//                indexActivity.putExtra("role", "Senator");
+//                indexActivity.putExtra("picID", Integer.toString(R.drawable.tompson));
+//            } else {
+//                indexActivity.putExtra("name", "Draymond Green");
+//                indexActivity.putExtra("party", "Republican");
+//                indexActivity.putExtra("term", "9/3/2017");
+//                indexActivity.putExtra("role", "Representative");
+//                indexActivity.putExtra("picID", Integer.toString(R.drawable.green));
+//            }
             indexActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(indexActivity);
         } else {
