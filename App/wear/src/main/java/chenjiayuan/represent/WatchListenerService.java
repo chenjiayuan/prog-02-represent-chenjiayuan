@@ -30,7 +30,7 @@ public class WatchListenerService extends WearableListenerService {
             Intent intent = new Intent(this, MainActivity.class );
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             //you need to add this flag since you're starting a new activity from a service
-            intent.putExtra("mode", "zip");
+            intent.putExtra("mode", value);
             Log.d("T", "about to start watch MainActivity with CAT_NAME: Fred");
             startActivity(intent);
         } else if (messageEvent.getPath().equalsIgnoreCase( LOC )) {
@@ -38,7 +38,7 @@ public class WatchListenerService extends WearableListenerService {
             Intent intent = new Intent(this, MainActivity.class );
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             //you need to add this flag since you're starting a new activity from a service
-            intent.putExtra("mode", "loc");
+            intent.putExtra("mode", value);
             startActivity(intent);
         } else {
             super.onMessageReceived( messageEvent );

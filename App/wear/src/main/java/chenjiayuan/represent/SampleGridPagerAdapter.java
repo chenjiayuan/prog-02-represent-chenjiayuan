@@ -18,10 +18,15 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
 
     private final Context mContext;
     private List mRows;
+    int m = -1;
 
     public SampleGridPagerAdapter(Context ctx, FragmentManager fm, String mode) {
         super(fm);
         mContext = ctx;
+        if (mode != null) {
+            if (mode.equals("zipcode")) m = 0;
+            else if (mode.equals("currentLocation")) m = 1;
+        }
     }
 
     static final int[] BG_IMAGES = new int[] {
@@ -41,7 +46,7 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
         }
     }
     // Create a static set of pages in a 2D array
-    private final Page[][] PAGES = {
+    private final Page[][] PAGES1 = {
             {
                     new Page(R.string.name1, R.string.party1, 0),
                     new Page(R.string.name2, R.string.party2, 0),
@@ -51,22 +56,40 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
                     new Page(R.string.title2012, R.string.stat, 0)
             }
     };
-//    private final Page[][] PAGES = {
-//            {
-//                    new Page(R.string.name11, R.string.party11, 0),
-//                    new Page(R.string.name22, R.string.party22, 0),
-//                    new Page(R.string.name33, R.string.party33, 0),
-//            },
-//            {
-//                    new Page(R.string.title20122, R.string.stat2, 0)
-//            }
-//    };
+    private final Page[][] PAGES2 = {
+            {
+                    new Page(R.string.name11, R.string.party11, 0),
+                    new Page(R.string.name22, R.string.party22, 0),
+                    new Page(R.string.name33, R.string.party33, 0),
+            },
+            {
+                    new Page(R.string.title20122, R.string.stat2, 0)
+            }
+    };
+    private final Page[][] PAGES_EMPTY = {
+            {
+                    new Page(R.string.name0, R.string.party0, 0),
+                    new Page(R.string.name0, R.string.party0, 0),
+                    new Page(R.string.name0, R.string.party0, 0),
+            },
+            {
+                    new Page(R.string.name0, R.string.name0, 0)
+            }
+    };
 
     // Override methods in FragmentGridPagerAdapter
     // Obtain the UI fragment at the specified position
     @Override
     public Fragment getFragment(int row, int col) {
-        Page page = PAGES[row][col];
+        //TODO: fix for demo purpose
+        Page page;
+        if (m == 0) {
+            page = PAGES1[row][col];
+        } else if (m == 1) {
+            page = PAGES2[row][col];
+        } else {
+            page = PAGES_EMPTY[row][col];
+        }
         String title =
                 page.titleRes != 0 ? mContext.getString(page.titleRes) : null;
         String text =
@@ -91,14 +114,33 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
     // Obtain the background image for the specific page
     @Override
     public Drawable getBackgroundForPage(int row, int column) {
-        if( row == 0 && column == 0) {
-            return mContext.getResources().getDrawable(R.drawable.james, null);
-        } else if (row == 0 && column == 1) {
-            return mContext.getResources().getDrawable(R.drawable.irving, null);
-        } else if (row == 0 && column == 2) {
-            return mContext.getResources().getDrawable(R.drawable.love, null);
-        } else if (row == 1 && column == 0) {
-            return mContext.getResources().getDrawable(R.drawable.obama, null);
+        //TODO: fix demo purpose
+        if (m == -1) {
+            return GridPagerAdapter.BACKGROUND_NONE;
+        } else if (m == 0) {
+            if( row == 0 && column == 0) {
+                return mContext.getResources().getDrawable(R.drawable.curry, null);
+            } else if (row == 0 && column == 1) {
+                return mContext.getResources().getDrawable(R.drawable.tompson, null);
+            } else if (row == 0 && column == 2) {
+                return mContext.getResources().getDrawable(R.drawable.green, null);
+            } else if (row == 1 && column == 0) {
+                return mContext.getResources().getDrawable(R.drawable.obama, null);
+            } else {
+                return GridPagerAdapter.BACKGROUND_NONE;
+            }
+        } else if (m == 1) {
+            if( row == 0 && column == 0) {
+                return mContext.getResources().getDrawable(R.drawable.james, null);
+            } else if (row == 0 && column == 1) {
+                return mContext.getResources().getDrawable(R.drawable.irving, null);
+            } else if (row == 0 && column == 2) {
+                return mContext.getResources().getDrawable(R.drawable.love, null);
+            } else if (row == 1 && column == 0) {
+                return mContext.getResources().getDrawable(R.drawable.obama, null);
+            } else {
+                return GridPagerAdapter.BACKGROUND_NONE;
+            }
         } else {
             return GridPagerAdapter.BACKGROUND_NONE;
         }
@@ -107,12 +149,12 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
     // Obtain the number of pages (vertical)
     @Override
     public int getRowCount() {
-        return PAGES.length;
+        return PAGES1.length;
     }
 
     // Obtain the number of pages (horizontal)
     @Override
     public int getColumnCount(int rowNum) {
-        return PAGES[rowNum].length;
+        return PAGES1[rowNum].length;
     }
 }
