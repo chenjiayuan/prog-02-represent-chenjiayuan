@@ -20,7 +20,7 @@ import java.util.List;
 **/
 
 
-public class WatchToPhoneService extends Service implements GoogleApiClient.ConnectionCallbacks {
+public class WatchToPhoneService extends Service {
 
     private GoogleApiClient mWatchApiClient;
     private List<Node> nodes = new ArrayList<>();
@@ -33,7 +33,14 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         //initialize the googleAPIClient for message passing
         mWatchApiClient = new GoogleApiClient.Builder( this )
                 .addApi( Wearable.API )
-                .addConnectionCallbacks(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle connectionHint) {
+                    }
+                    @Override
+                    public void onConnectionSuspended(int cause) {
+                    }
+                })
                 .build();
     }
 
@@ -50,8 +57,8 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         mode = extras.getString("mode");
         index = extras.getString("index");
         Log.d("T", "received mode: " + mode);
-        //and actually connect it
         mWatchApiClient.connect();
+        sendMessage("/" + mode, index); // ('/shake', 'shake')
         Log.d("T", "mWatchApiClient.connect() called");
         return START_NOT_STICKY;
     }
@@ -61,31 +68,17 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         return null;
     }
 
-    @Override //alternate method to connecting: no longer create this in a new thread, but as a callback
-    public void onConnected(Bundle bundle) {
-        Log.d("T", "in onconnected");
-        Wearable.NodeApi.getConnectedNodes(mWatchApiClient)
-                .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
-                    @Override
-                    public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
-                        nodes = getConnectedNodesResult.getNodes();
-                        Log.d("T", "found nodes");
-                        //when we find a connected node, we populate the list declared above
-                        //finally, we can send a message
-                        sendMessage("/" + mode, index); // ('/shake', 'shake')
-                        Log.d("T", "sent");
-                    }
-                });
-    }
-
-    @Override //we need this to implement GoogleApiClient.ConnectionsCallback
-    public void onConnectionSuspended(int i) {}
-
     private void sendMessage(final String path, final String text ) {
-        for (Node node : nodes) {
-            Wearable.MessageApi.sendMessage(
-                    mWatchApiClient, node.getId(), path, text.getBytes());
-        }
+        Wearable.NodeApi.getConnectedNodes(mWatchApiClient).
+                setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>()
+        {
+            @Override
+            public void onResult(NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                nodes = getConnectedNodesResult.getNodes();
+                for (Node node : nodes)
+                    Wearable.MessageApi.sendMessage(mWatchApiClient, node.getId(), path, text.getBytes());
+            }
+        });
     }
-
 }
+

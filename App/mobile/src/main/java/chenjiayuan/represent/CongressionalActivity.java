@@ -14,10 +14,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CongressionalActivity extends AppCompatActivity {
-    private List<Representative> reps = new ArrayList<Representative>();
+    //private List<Representative> reps = new ArrayList<Representative>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +25,7 @@ public class CongressionalActivity extends AppCompatActivity {
 
         TextView location = (TextView) findViewById(R.id.loc);
 
+        //display location
         Intent intent = getIntent();
         if (intent.getStringExtra("mode").equals("zipcode")) { //zipcode
             location.setText("Zipcode " + intent.getStringExtra("zipcode"));
@@ -38,7 +38,7 @@ public class CongressionalActivity extends AppCompatActivity {
         watchIntent.putExtra("mode", intent.getStringExtra("mode")); //mode = "zipcode" or "currentLocation"
         startService(watchIntent);
 
-        //demo purpose
+        //populate representatives list
         if (intent.getStringExtra("mode").equals("zipcode")) {
             populateRepList();
         } else {
@@ -50,19 +50,21 @@ public class CongressionalActivity extends AppCompatActivity {
 
     //fake data populator
     private void populateRepList() {
-        reps.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
+        PeopleData.people = new ArrayList<Representative>();
+        PeopleData.people.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.curry));
-        reps.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
+        PeopleData.people.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.tompson));
-        reps.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
+        PeopleData.people.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.green));
     }
     private void populateRepListRandom() {
-        reps.add(new Representative("Lebron James", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
+        PeopleData.people = new ArrayList<Representative>();
+        PeopleData.people.add(new Representative("Lebron James", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.james));
-        reps.add(new Representative("Kyrie Irving", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
+        PeopleData.people.add(new Representative("Kyrie Irving", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.irving));
-        reps.add(new Representative("Kevin Love", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
+        PeopleData.people.add(new Representative("Kevin Love", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.love));
     }
 
@@ -86,7 +88,7 @@ public class CongressionalActivity extends AppCompatActivity {
     //adapter that manage the content of the list view
     private class MyListAdapter extends ArrayAdapter<Representative> {
         public MyListAdapter() {
-            super(CongressionalActivity.this, R.layout.item_view, reps);
+            super(CongressionalActivity.this, R.layout.item_view, PeopleData.people);
         }
 
         @Override
@@ -96,7 +98,7 @@ public class CongressionalActivity extends AppCompatActivity {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
             Button btn = (Button) itemView.findViewById(R.id.moreInfoButton);
-            final Representative r = reps.get(position);
+            final Representative r = PeopleData.people.get(position);
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Log.d("T", "in onconnected");
