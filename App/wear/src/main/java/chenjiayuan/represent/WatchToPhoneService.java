@@ -2,24 +2,18 @@ package chenjiayuan.represent;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Result;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.wearable.CapabilityApi;
-import com.google.android.gms.wearable.CapabilityInfo;
-import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by chenjiayuan on 2/27/16.
@@ -40,7 +34,6 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                 .addApi( Wearable.API )
                 .addConnectionCallbacks(this)
                 .build();
-        //and actually connect it
     }
 
     @Override
@@ -54,9 +47,10 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         Log.d("T", "onStartCommand");
         Bundle extras = intent.getExtras();
         mode = extras.getString("mode");
+        Log.d("T", "received mode: " + mode);
         //and actually connect it
         mWatchApiClient.connect();
-
+        Log.d("T", "mWatchApiClient.connect() called");
         return START_STICKY;
     }
 
@@ -76,7 +70,7 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                         Log.d("T", "found nodes");
                         //when we find a connected node, we populate the list declared above
                         //finally, we can send a message
-                        sendMessage("/send_toast", mode);
+                        sendMessage("/" + mode, mode); // ('/shake', 'shake')
                         Log.d("T", "sent");
                     }
                 });
