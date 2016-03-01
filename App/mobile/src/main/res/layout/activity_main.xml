@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="320dp"
-        android:src="@drawable/all_people"
+        android:src="@drawable/all_people2"
         android:layout_marginTop="-120dp"
         android:id="@+id/all_people"/>
 
@@ -92,5 +92,5 @@
         android:layout_marginTop="340dp"
         android:layout_marginLeft="120dp"
         android:onClick="TextViewClicked"
-        android:text="Current Location:\nEmeryville, CA" />
+        android:text="Current Location:\nAtlanta, GA" />
 </RelativeLayout>

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -129,6 +131,33 @@ public class CongressionalActivity extends AppCompatActivity {
             //TextView tweetText = (TextView) itemView.findViewById(R.id.tweet);
             //tweetText.setText(r.getLastTweet());
             return itemView;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.home).setIcon(R.drawable.home);
+        //menu.findItem(R.id.info).setIcon(R.drawable.info);
+        return true;
+    }
+
+    //handle option select
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.home:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                return true;
+//            case R.id.info:
+//                intent = new Intent(this, MainActivity.class);
+//                startActivity(intent);
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
     }
 }

@@ -3,6 +3,8 @@ package chenjiayuan.represent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -61,6 +63,33 @@ public class MainActivity extends AppCompatActivity {
             zipcode.setVisibility(View.VISIBLE);
             icon.setImageResource(R.drawable.ic_location_city_black_48dp);
             mode = "zipcode";
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.home).setIcon(R.drawable.home);
+        //menu.findItem(R.id.info).setIcon(R.drawable.info);
+        return true;
+    }
+
+    //handle option select
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.home:
+                intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                return true;
+//            case R.id.info:
+//                intent = new Intent(this, MainActivity.class);
+//                startActivity(intent);
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
     }
 }

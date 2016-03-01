@@ -26,7 +26,9 @@ public class PhoneListenerService extends WearableListenerService {
             Intent randomIntent = new Intent(this, CongressionalActivity.class);
             //TODO: use bundle instead
             randomIntent.putExtra("mode", "currentLocation");
-            randomIntent.putExtra("location", "Random location: Atlanta, GA");
+            double longitude = Math.random() * Math.PI * 2;
+            double latitude = Math.acos(Math.random() * 2 - 1);
+            randomIntent.putExtra("location", "Random location:\n" + String.valueOf(longitude) + ", " + String.valueOf(latitude));
             randomIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(randomIntent);
         } else if (messageEvent.getPath().equalsIgnoreCase(SELECT)) {
