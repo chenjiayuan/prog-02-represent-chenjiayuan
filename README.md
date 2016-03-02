@@ -17,7 +17,8 @@ Jiayuan Chen ([jiayuan.chen@berkeley.edu](mailto:jiayuan.chen@berkeley.edu))
 
 ## Demo Video
 
-See [your demo video title here] (https://link_to_your_video)
+Figma: [https://www.figma.com/file/CYfQ9I3wvsqStaPLXhIM0u3Y/Represent] (https://www.figma.com/file/CYfQ9I3wvsqStaPLXhIM0u3Y/Represent)
+Phase 2: [https://youtu.be/Fxei3xo_7w4] (https://youtu.be/Fxei3xo_7w4)
 
 ## Screenshots
 
