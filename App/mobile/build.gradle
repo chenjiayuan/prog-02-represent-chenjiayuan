@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "chenjiayuan.represent"
@@ -34,4 +35,5 @@ dependencies {
     compile 'com.google.android.support:wearable:1.3.0'
     compile 'com.android.support:support-v4:23.0.0'
     compile 'com.google.maps:google-maps-services:0.1.7'
+    compile 'com.android.volley:volley:1.0.0'
 }

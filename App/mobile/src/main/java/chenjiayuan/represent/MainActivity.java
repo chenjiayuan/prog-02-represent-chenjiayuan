@@ -1,15 +1,9 @@
 package chenjiayuan.represent;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,14 +12,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.Wearable;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -42,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements
     //default current location: Emeryville
     String latitude = "37.8312983";
     String longitude = "-122.2849983";
+    String location_county = "Emeryville";
+    String location_state = "CA";
+
+    //Google API
+    String site = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    String api = "&key=AIzaSyAWGQa5PmTMdLylcOKGOn2XbKMI9DaXoik";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements
         zipcode = (EditText) findViewById(R.id.zip_option);
         zipcode.setVisibility(View.VISIBLE);
         location.setVisibility(View.GONE);
-    }
+    } //onCreate
 
     public void searchClickHandler(View view) {
         if (view.getId() == R.id.searchButton) {
@@ -71,10 +75,13 @@ public class MainActivity extends AppCompatActivity implements
             intent = new Intent(this, CongressionalActivity.class);
             //TODO: use bundle instead
             intent.putExtra("mode", mode);
-            intent.putExtra("location", latitude + "/" + longitude);
+            intent.putExtra("location", location_county + ", " + location_state);
             intent.putExtra("zipcode", zipcode.getText().toString());
             startActivity(intent);
         }
+
+        //api
+
     }
 
     public void locationOptionClicked(View view) {
@@ -86,6 +93,38 @@ public class MainActivity extends AppCompatActivity implements
             zipcode.setVisibility(View.GONE);
             icon.setImageResource(R.drawable.ic_location_on_black_48dp);
             mode = "currentLocation";
+            final JSONObject jLocation;
+
+            //fetch api
+            String url = site + latitude + "," + longitude + api;
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jLocation) {
+                            System.out.println(jLocation);
+                            JSONArray addr_1 = jLocation.optJSONArray("results");
+                            try{
+                                int i = 0;
+                                JSONObject address_components = addr_1.getJSONObject(0);
+                                JSONArray addr_2 = address_components.optJSONArray("address_components");
+                                JSONObject jCounty  = addr_2.getJSONObject(3);
+                                JSONObject jState = addr_2.getJSONObject(4);
+
+                                //set text
+                                location.setText("Current Location:\n" + jCounty.getString("long_name") + ", "
+                                        + jState.getString("short_name"));
+                                location_county = jCounty.getString("long_name");
+                                location_state = jState.getString("short_name");
+                            } catch (JSONException e) {e.printStackTrace();}
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+            // Access the RequestQueue through your singleton class.
+            MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         }
     }
     public void zipcodeOptionClicked(View view) {
@@ -162,65 +201,64 @@ public class MainActivity extends AppCompatActivity implements
             latitude = String.valueOf(mLastLocation.getLatitude());
             System.out.println(String.valueOf(mLastLocation.getLongitude()));
             longitude = String.valueOf(mLastLocation.getLongitude());
-            getAddressFromLocation(mLastLocation, this, new GeocoderHandler());
-
+            //getAddressFromLocation(mLastLocation, this, new GeocoderHandler());
         } else {
             System.out.println("null location");
         }
     }
 
-    //print the received geo location
-    private class GeocoderHandler extends Handler {
-        @Override
-        public void handleMessage(Message message) {
-            String result;
-            switch (message.what) {
-                case 1:
-                    Bundle bundle = message.getData();
-                    result = bundle.getString("address");
-                    break;
-                default:
-                    result = null;
-            }
-            // replace by what you need to do
-            //System.out.println(result);
-        }
-    }
+//    //print the received geo location
+//    private class GeocoderHandler extends Handler {
+//        @Override
+//        public void handleMessage(Message message) {
+//            String result;
+//            switch (message.what) {
+//                case 1:
+//                    Bundle bundle = message.getData();
+//                    result = bundle.getString("address");
+//                    break;
+//                default:
+//                    result = null;
+//            }
+//            // replace by what you need to do
+//            //System.out.println(result);
+//        }
+//    }
 
-    //transform coordinate to location
-    public static void getAddressFromLocation(
-            final Location location, final Context context, final Handler handler) {
-        Thread thread = new Thread() {
-            @Override public void run() {
-                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                String result = null;
-                try {
-                    List<Address> list = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    if (list != null && list.size() > 0) {
-                        Address address = list.get(0);
-                        System.out.println(address);
-                        // sending back first address line and locality
-                        result = address.getAddressLine(0) + ", " + address.getLocality() +
-                                "\n"+ address.getSubAdminArea() + "/" + address.getAdminArea();
-                    }
-                } catch (IOException e) {
-                    Log.e("T", "Impossible to connect to Geocoder", e);
-                } finally {
-                    Message msg = Message.obtain();
-                    msg.setTarget(handler);
-                    if (result != null) {
-                        msg.what = 1;
-                        Bundle bundle = new Bundle();
-                        bundle.putString("address", result);
-                        msg.setData(bundle);
-                    } else
-                        msg.what = 0;
-                    msg.sendToTarget();
-                }
-            }
-        };
-        thread.start();
-    }
+//    //transform coordinate to location
+//    public static void getAddressFromLocation(
+//            final  Location location, final Context context, final Handler handler) {
+//        Thread thread = new Thread() {
+//            @Override public void run() {
+//                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+//                String result = null;
+//                try {
+//                    List<Address> list = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//                    if (list != null && list.size() > 0) {
+//                        Address address = list.get(0);
+//                        System.out.println(address);
+//                        // sending back first address line and locality
+//                        result = address.getAddressLine(0) + ", " + address.getLocality() +
+//                                "\n"+ address.getSubAdminArea() + "/" + address.getAdminArea();
+//                    }
+//                } catch (IOException e) {
+//                    Log.e("T", "Impossible to connect to Geocoder", e);
+//                } finally {
+//                    Message msg = Message.obtain();
+//                    msg.setTarget(handler);
+//                    if (result != null) {
+//                        msg.what = 1;
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("address", result);
+//                        msg.setData(bundle);
+//                    } else
+//                        msg.what = 0;
+//                    msg.sendToTarget();
+//                }
+//            }
+//        };
+//        thread.start();
+//    }
 
     @Override
     public void onConnectionSuspended(int i) {}
