@@ -1,6 +1,7 @@
 package chenjiayuan.represent;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -11,20 +12,43 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.wearable.Wearable;
 
+public class MainActivity extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    private GoogleApiClient mGoogleApiClient;
     TextView location;
     EditText zipcode;
     ImageView icon;
+
+    //default mode: zipcode
     String mode = "zipcode";
+
+    //default current location: Emeryville
+    String latitude = "37.8312983";
+    String longitude = "-122.2849983";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //prevent keyboard appear automatically
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        //initialize Google api
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addApi(Wearable.API)  // used for data layer API
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        //get the buttons and textboxes
+        setContentView(R.layout.activity_main);
         location = (TextView) findViewById(R.id.location_option);
         zipcode = (EditText) findViewById(R.id.zip_option);
         zipcode.setVisibility(View.VISIBLE);
@@ -67,6 +91,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        System.out.println("mGoogleApiClient connected..");
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        System.out.println("mGoogleApiClient disconnected..");
+        super.onStop();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.home).setIcon(R.drawable.home);
@@ -92,4 +130,34 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            System.out.println(String.valueOf(mLastLocation.getLatitude()));
+            System.out.println(String.valueOf(mLastLocation.getLongitude()));
+        } else {
+            System.out.println("null location");
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connResult) {}
 }
