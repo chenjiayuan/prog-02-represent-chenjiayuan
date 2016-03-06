@@ -1,9 +1,15 @@
 package chenjiayuan.represent;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +22,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.Wearable;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -61,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
             intent = new Intent(this, CongressionalActivity.class);
             //TODO: use bundle instead
             intent.putExtra("mode", mode);
-            intent.putExtra("location", location.getText().toString());
+            intent.putExtra("location", latitude + "/" + longitude);
             intent.putExtra("zipcode", zipcode.getText().toString());
             startActivity(intent);
         }
@@ -149,10 +159,67 @@ public class MainActivity extends AppCompatActivity implements
                 mGoogleApiClient);
         if (mLastLocation != null) {
             System.out.println(String.valueOf(mLastLocation.getLatitude()));
+            latitude = String.valueOf(mLastLocation.getLatitude());
             System.out.println(String.valueOf(mLastLocation.getLongitude()));
+            longitude = String.valueOf(mLastLocation.getLongitude());
+            getAddressFromLocation(mLastLocation, this, new GeocoderHandler());
+
         } else {
             System.out.println("null location");
         }
+    }
+
+    //print the received geo location
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            String result;
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    result = bundle.getString("address");
+                    break;
+                default:
+                    result = null;
+            }
+            // replace by what you need to do
+            //System.out.println(result);
+        }
+    }
+
+    //transform coordinate to location
+    public static void getAddressFromLocation(
+            final Location location, final Context context, final Handler handler) {
+        Thread thread = new Thread() {
+            @Override public void run() {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                String result = null;
+                try {
+                    List<Address> list = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    if (list != null && list.size() > 0) {
+                        Address address = list.get(0);
+                        System.out.println(address);
+                        // sending back first address line and locality
+                        result = address.getAddressLine(0) + ", " + address.getLocality() +
+                                "\n"+ address.getSubAdminArea() + "/" + address.getAdminArea();
+                    }
+                } catch (IOException e) {
+                    Log.e("T", "Impossible to connect to Geocoder", e);
+                } finally {
+                    Message msg = Message.obtain();
+                    msg.setTarget(handler);
+                    if (result != null) {
+                        msg.what = 1;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("address", result);
+                        msg.setData(bundle);
+                    } else
+                        msg.what = 0;
+                    msg.sendToTarget();
+                }
+            }
+        };
+        thread.start();
     }
 
     @Override
