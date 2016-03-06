@@ -15,24 +15,38 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class CongressionalActivity extends AppCompatActivity {
-    //private List<Representative> reps = new ArrayList<Representative>();
+    private String site = "http://congress.api.sunlightfoundation.com/legislators/locate?";
+    private String api = "&apikey=d1ff26dd5fb04253940eae90e286b0ea";
+    int repNum = 0;
+    int sNum = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congressional);
-
         TextView location = (TextView) findViewById(R.id.loc);
+        TextView stat = (TextView) findViewById(R.id.ppl);
 
         //display location
         Intent intent = getIntent();
         if (intent.getStringExtra("mode").equals("zipcode")) { //zipcode
             location.setText("Zipcode " + intent.getStringExtra("zipcode"));
+            populateRepList("zipcode", intent.getStringExtra("zipcode"));
         } else { //current location
             location.setText(intent.getStringExtra("location"));
+            populateRepList("location", intent.getStringExtra("lalo"));
         }
 
         //start watch
@@ -41,17 +55,77 @@ public class CongressionalActivity extends AppCompatActivity {
         startService(watchIntent);
 
         //populate representatives list
-        if (intent.getStringExtra("mode").equals("zipcode")) {
-            populateRepList();
-        } else {
-            populateRepListRandom();
-        }
         populateListView();
         registerClickCallback();
     }
 
     //fake data populator
-    private void populateRepList() {
+    private void populateRepList(String mode, String data) {
+        String request;
+//        final TextView stat = (TextView) findViewById(R.id.ppl);
+
+        //create api link
+        if (mode.equals("zipcode")) {
+            request= site + "zip=" + data + api;
+        } else {
+            String[] lalo = data.split("/");
+            request = site + "latitude=" + lalo[0] + "&longitude=" + lalo[1] + api;
+        }
+
+        //send api request
+        final JSONObject jRepList;
+        final TextView stat = (TextView) findViewById(R.id.ppl);
+
+        PeopleData.people = new ArrayList<Representative>();
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+            (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jRepList) {
+                    System.out.println(jRepList);
+                    try{
+                        //update number of representatives received
+                        repNum = jRepList.getInt("count");
+                        JSONArray results = jRepList.optJSONArray("results");
+                        for (int i=0; i<repNum; i++) {
+                            JSONObject person = results.getJSONObject(i);
+                            System.out.println(person);
+                            String name = person.getString("first_name")+" "+person.getString("last_name");
+                            String title;
+                            if (person.getString("title").equals("Sen")){
+                                title = "Senator";
+                                sNum++;
+                            } else { title = "Representative"; }
+                            String party;
+                            if (person.getString("party").equals("R")){
+                                party = "Republican";
+                            } else if (person.getString("party").equals("D")) {
+                                party = "Democrat";
+                            } else { party = "Representative"; }
+                            String email = person.getString("oc_email");
+                            String website = person.getString("website");
+                            String twitter = person.getString("twitter_id");
+                            String term = person.getString("term_end");
+                            PeopleData.people.add(new Representative(name, title, party, email,
+                                    website, twitter, term, R.drawable.curry));
+                        }
+
+                        //set stat text
+                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
+                        + " representatives found!");
+                    } catch (JSONException e) {e.printStackTrace();}
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // TODO Auto-generated method stub
+                }
+            });
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+    }
+
+
+
+    private void populateRepList2(String mode, String data) {
         PeopleData.people = new ArrayList<Representative>();
         PeopleData.people.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
                 "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.curry));

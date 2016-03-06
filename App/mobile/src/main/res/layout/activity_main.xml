@@ -92,5 +92,5 @@
         android:layout_marginTop="340dp"
         android:layout_marginLeft="120dp"
         android:onClick="TextViewClicked"
-        android:text="Current Location:\nAtlanta, GA" />
+        android:text="" />
 </RelativeLayout>

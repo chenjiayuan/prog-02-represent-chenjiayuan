@@ -77,11 +77,9 @@ public class MainActivity extends AppCompatActivity implements
             intent.putExtra("mode", mode);
             intent.putExtra("location", location_county + ", " + location_state);
             intent.putExtra("zipcode", zipcode.getText().toString());
+            intent.putExtra("lalo", latitude+"/"+longitude);
             startActivity(intent);
         }
-
-        //api
-
     }
 
     public void locationOptionClicked(View view) {
@@ -98,31 +96,30 @@ public class MainActivity extends AppCompatActivity implements
             //fetch api
             String url = site + latitude + "," + longitude + api;
             JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jLocation) {
-                            System.out.println(jLocation);
-                            JSONArray addr_1 = jLocation.optJSONArray("results");
-                            try{
-                                int i = 0;
-                                JSONObject address_components = addr_1.getJSONObject(0);
-                                JSONArray addr_2 = address_components.optJSONArray("address_components");
-                                JSONObject jCounty  = addr_2.getJSONObject(3);
-                                JSONObject jState = addr_2.getJSONObject(4);
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jLocation) {
+                        System.out.println(jLocation);
+                        JSONArray addr_1 = jLocation.optJSONArray("results");
+                        try{
+                            JSONObject address_components = addr_1.getJSONObject(0);
+                            JSONArray addr_2 = address_components.optJSONArray("address_components");
+                            JSONObject jCounty  = addr_2.getJSONObject(3);
+                            JSONObject jState = addr_2.getJSONObject(4);
 
-                                //set text
-                                location.setText("Current Location:\n" + jCounty.getString("long_name") + ", "
-                                        + jState.getString("short_name"));
-                                location_county = jCounty.getString("long_name");
-                                location_state = jState.getString("short_name");
-                            } catch (JSONException e) {e.printStackTrace();}
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // TODO Auto-generated method stub
-                        }
-                    });
+                            //set text
+                            location.setText("Current Location:\n" + jCounty.getString("long_name") + ", "
+                                    + jState.getString("short_name"));
+                            location_county = jCounty.getString("long_name");
+                            location_state = jState.getString("short_name");
+                        } catch (JSONException e) {e.printStackTrace();}
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                    }
+                });
             // Access the RequestQueue through your singleton class.
             MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         }
