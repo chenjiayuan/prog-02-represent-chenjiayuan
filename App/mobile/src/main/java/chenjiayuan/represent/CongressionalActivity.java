@@ -73,7 +73,6 @@ public class CongressionalActivity extends AppCompatActivity {
         }
 
         //send api request
-        final JSONObject jRepList;
         final TextView stat = (TextView) findViewById(R.id.ppl);
 
         PeopleData.people = new ArrayList<Representative>();
@@ -81,38 +80,39 @@ public class CongressionalActivity extends AppCompatActivity {
             (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jRepList) {
-                    System.out.println(jRepList);
-                    try{
-                        //update number of representatives received
-                        repNum = jRepList.getInt("count");
-                        JSONArray results = jRepList.optJSONArray("results");
-                        for (int i=0; i<repNum; i++) {
-                            JSONObject person = results.getJSONObject(i);
-                            System.out.println(person);
-                            String name = person.getString("first_name")+" "+person.getString("last_name");
-                            String title;
-                            if (person.getString("title").equals("Sen")){
-                                title = "Senator";
-                                sNum++;
-                            } else { title = "Representative"; }
-                            String party;
-                            if (person.getString("party").equals("R")){
-                                party = "Republican";
-                            } else if (person.getString("party").equals("D")) {
-                                party = "Democrat";
-                            } else { party = "Representative"; }
-                            String email = person.getString("oc_email");
-                            String website = person.getString("website");
-                            String twitter = person.getString("twitter_id");
-                            String term = person.getString("term_end");
-                            PeopleData.people.add(new Representative(name, title, party, email,
-                                    website, twitter, term, R.drawable.curry));
-                        }
+                System.out.println(jRepList);
+                try{
+                    //update number of representatives received
+                    repNum = jRepList.getInt("count");
+                    JSONArray results = jRepList.optJSONArray("results");
+                    for (int i=0; i<repNum; i++) {
+                        JSONObject person = results.getJSONObject(i);
+                        System.out.println(person);
+                        String name = person.getString("first_name")+" "+person.getString("last_name");
+                        String title;
+                        if (person.getString("title").equals("Sen")){
+                            title = "Senator";
+                            sNum++;
+                        } else { title = "Representative"; }
+                        String party;
+                        if (person.getString("party").equals("R")){
+                            party = "Republican";
+                        } else if (person.getString("party").equals("D")) {
+                            party = "Democrat";
+                        } else { party = "Representative"; }
+                        String email = person.getString("oc_email");
+                        String website = person.getString("website");
+                        String twitter = person.getString("twitter_id");
+                        String term = person.getString("term_end");
+                        String id = person.getString("bioguide_id");
+                        PeopleData.people.add(new Representative(id, name, title, party, email,
+                                website, twitter, term, R.drawable.curry));
+                    }
 
-                        //set stat text
-                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
-                        + " representatives found!");
-                    } catch (JSONException e) {e.printStackTrace();}
+                    //set stat text
+                    stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
+                    + " representatives found!");
+                } catch (JSONException e) {e.printStackTrace();}
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -121,27 +121,6 @@ public class CongressionalActivity extends AppCompatActivity {
                 }
             });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-    }
-
-
-
-    private void populateRepList2(String mode, String data) {
-        PeopleData.people = new ArrayList<Representative>();
-        PeopleData.people.add(new Representative("Stephen Curry", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.curry));
-        PeopleData.people.add(new Representative("Klay Thompson", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.tompson));
-        PeopleData.people.add(new Representative("Draymond Green", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.green));
-    }
-    private void populateRepListRandom() {
-        PeopleData.people = new ArrayList<Representative>();
-        PeopleData.people.add(new Representative("Lebron James", "Senator", "Democrat", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/1/2017", R.drawable.james));
-        PeopleData.people.add(new Representative("Kyrie Irving", "Senator", "Republican", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/2/2017", R.drawable.irving));
-        PeopleData.people.add(new Representative("Kevin Love", "Representative", "Republican", "jiayuan.chen@berkeley.edu",
-                "chenjiayuan.com", "lastTweet", "9/3/2017", R.drawable.love));
     }
 
     //populate the list view
@@ -180,6 +159,7 @@ public class CongressionalActivity extends AppCompatActivity {
                     Log.d("T", "in onconnected");
                     Intent intent = new Intent(CongressionalActivity.this, DetailActivity.class);
                     //TODO: use bundle instead
+                    intent.putExtra("id", r.getId());
                     intent.putExtra("name", r.getName());
                     intent.putExtra("party", r.getParty());
                     intent.putExtra("term", r.getTerm());

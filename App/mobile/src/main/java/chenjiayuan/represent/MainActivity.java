@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements
             zipcode.setVisibility(View.GONE);
             icon.setImageResource(R.drawable.ic_location_on_black_48dp);
             mode = "currentLocation";
-            final JSONObject jLocation;
 
             //fetch api
             String url = site + latitude + "," + longitude + api;
