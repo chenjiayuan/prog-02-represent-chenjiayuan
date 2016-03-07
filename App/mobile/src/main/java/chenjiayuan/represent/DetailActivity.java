@@ -72,7 +72,6 @@ public class DetailActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO Auto-generated method stub
             }
         });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
@@ -84,7 +83,7 @@ public class DetailActivity extends AppCompatActivity {
                 try{
                     //update number of representatives received
                     int BillCount = jBillList.getInt("count");
-                    if (BillCount > 20) BillCount = 20;
+                    if (BillCount > 20) BillCount = 20; //TODO: deal with this 20 per page issue?
                     JSONArray results = jBillList.optJSONArray("results");
                     StringBuilder sb = new StringBuilder();
                     for (int i=0; i<BillCount; i++) {
@@ -100,14 +99,12 @@ public class DetailActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO Auto-generated method stub
             }
         });
-
-        //MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest2);
     }
 
+    //handle option selection
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -116,7 +113,7 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
-    //handle option select
+    //handle option selection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;

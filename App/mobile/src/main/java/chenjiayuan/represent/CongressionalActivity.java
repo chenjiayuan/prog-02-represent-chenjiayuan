@@ -29,14 +29,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class CongressionalActivity extends AppCompatActivity {
+    //api for google maps
     private String site = "http://congress.api.sunlightfoundation.com/legislators/locate?";
     private String api = "&apikey=d1ff26dd5fb04253940eae90e286b0ea";
-    private int repNum = 0;
+
+    //total num of people, and numb of senators, subtract to get num of reps
+    private int totalNum = 0;
     private int sNum = 0;
-    private String mNames = "default";
-    private String mParties = "default";
-    private String county = "Franklin County";
-    private String state = "AR";
+
+    //value to send to watch
+    private String mNames = "defaultNames";
+    private String mParties = "defaultParties";
+    private String county = "Mohave";
+    private String state = "AZ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,25 +49,31 @@ public class CongressionalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_congressional);
         TextView location = (TextView) findViewById(R.id.loc);
 
-        //display location
+        //display location on top, and populate rep list
         Intent intent = getIntent();
-        if (intent.getStringExtra("mode").equals("zipcode")) { //zipcode
+        if (intent.getStringExtra("mode").equals("zipcode")) {
             location.setText("Zipcode " + intent.getStringExtra("zipcode"));
             populateRepList("zipcode", intent.getStringExtra("zipcode"));
-        } else { //current location
+        } else {
             location.setText(intent.getStringExtra("location"));
             populateRepList("location", intent.getStringExtra("lalo"));
         }
 
         //save county and state data
-        county = intent.getStringExtra("location").split(", ")[0];
-        state = intent.getStringExtra("location").split(", ")[1];
+        county = intent.getStringExtra("location").split(", ")[0].split(" ")[0]; //Alameda County
+        state = intent.getStringExtra("location").split(", ")[1]; //CA
+
+        //display view
+        //TODO: data not saved fast enough
+        populateListView();
+        registerClickCallback();
 
         //send info to watch
         startWatch();
     }
 
     private void startWatch() {
+        //construct strings of names and parties
         StringBuilder namesb = new StringBuilder();
         StringBuilder partysb = new StringBuilder();
         for (int i=0; i<PeopleData.people.size(); i++) {
@@ -71,41 +82,45 @@ public class CongressionalActivity extends AppCompatActivity {
         }
         mNames = namesb.toString();
         mParties = partysb.toString();
+
+        //construct string of 2012vote
         String m2012vote = get2012Vote(county, state); //TODO: county state not updated
+
+        //create intent
         Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
         watchIntent.putExtra("names", mNames);
         watchIntent.putExtra("parties", mParties);
         watchIntent.putExtra("2012votes", m2012vote);
-        System.out.println("=====");
-        System.out.println(mNames);
-        System.out.println(mParties);
-        System.out.println(m2012vote);
-        startService(watchIntent);
 
-        //populate representatives list
-        populateListView();
-        registerClickCallback();
+        //TODO: mNames and mParties not saved from populateRepList
+        Log.d("T", "==data to send to watch======");
+        Log.d("T", mNames);
+        Log.d("T", mParties);
+        Log.d("T", m2012vote);
+        startService(watchIntent);
     }
 
     //search for 2012 vote data based on County + State
     private String get2012Vote(String county, String state) {
         String voteString = loadJSONFromAsset();
         String concatVoteData = null;
+
         try {
             JSONArray jVote = new JSONArray(voteString);
             int jVoteLength = jVote.length();
+
             //search through match attributes
-            System.out.println(county.split(" ")[0]);
-            System.out.println(state);
+            Log.d("T", "Location to search in election json: " + county + " " + state);
             for(int i=0; i < jVoteLength; i++) {
                 JSONObject loc = jVote.getJSONObject(i);
-                System.out.println(loc);
-                if(loc.getString("county-name").equals(county.split(" ")[0]) && loc.getString("state-postal").equals(state)) {
+                if(loc.getString("county-name").equals(county) && loc.getString("state-postal").equals(state)) {
                     //location match!
                     String obamaVote = Double.toString(loc.getDouble("obama-percentage"));
                     String romneyVote = Double.toString(loc.getDouble("romney-percentage"));
-                    concatVoteData = county.split(" ")[0] + "-" + state + "-" + obamaVote + "-" + romneyVote + "-";
-                    System.out.println(concatVoteData);
+
+                    //concatenate 2012 vote data here
+                    concatVoteData = county + "-" + state + "-" + obamaVote + "-" + romneyVote + "-";
+                    Log.d("T", "string constructed: " + concatVoteData);
                     return concatVoteData;
                 }
             }
@@ -153,15 +168,14 @@ public class CongressionalActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(JSONObject jRepList) {
-                    System.out.println(jRepList);
                     try{
                         //update number of representatives received
-                        repNum = jRepList.getInt("count");
+                        totalNum = jRepList.getInt("count");
                         JSONArray results = jRepList.optJSONArray("results");
-                        //create strings to pass to phone
-                        for (int i=0; i<repNum; i++) {
+
+                        //add people to PeopleData
+                        for (int i=0; i<totalNum; i++) {
                             JSONObject person = results.getJSONObject(i);
-                            System.out.println(person);
                             String name = person.getString("first_name")+" "+person.getString("last_name");
                             String title;
                             if (person.getString("title").equals("Sen")){
@@ -182,9 +196,11 @@ public class CongressionalActivity extends AppCompatActivity {
                             PeopleData.people.add(new Representative(id, name, title, party, email,
                                     website, twitter, term, R.drawable.curry));
                         }
+                        System.out.println("====peopleDATA.people====");
+                        System.out.println(PeopleData.people);
 
                         //set stat text
-                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
+                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(totalNum-sNum)
                         + " representatives found!");
                     } catch (JSONException e) {e.printStackTrace();}
                 }
@@ -195,8 +211,6 @@ public class CongressionalActivity extends AppCompatActivity {
                 }
             });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-
-        System.out.println(PeopleData.people);
     }
 
     //populate the list view
@@ -206,6 +220,7 @@ public class CongressionalActivity extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    //??
     private void registerClickCallback() {
         ListView list = (ListView) findViewById(R.id.repListView);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -232,9 +247,7 @@ public class CongressionalActivity extends AppCompatActivity {
             final Representative r = PeopleData.people.get(position);
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.d("T", "in onconnected");
                     Intent intent = new Intent(CongressionalActivity.this, DetailActivity.class);
-                    //TODO: use bundle instead
                     intent.putExtra("id", r.getId());
                     intent.putExtra("name", r.getName());
                     intent.putExtra("party", r.getParty());
@@ -253,6 +266,7 @@ public class CongressionalActivity extends AppCompatActivity {
             TextView roleText = (TextView) itemView.findViewById(R.id.role);
             roleText.setText(r.getRole());
             TextView partyText = (TextView) itemView.findViewById(R.id.party);
+            //TODO: email and website not clickable
             partyText.setText(r.getParty());
             TextView emailText = (TextView) itemView.findViewById(R.id.email);
             emailText.setText(r.getEmail());
@@ -264,6 +278,7 @@ public class CongressionalActivity extends AppCompatActivity {
         }
     }
 
+    //handle option selection
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -272,7 +287,7 @@ public class CongressionalActivity extends AppCompatActivity {
         return true;
     }
 
-    //handle option select
+    //handle option selection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
@@ -291,3 +306,4 @@ public class CongressionalActivity extends AppCompatActivity {
         }
     }
 }
+
