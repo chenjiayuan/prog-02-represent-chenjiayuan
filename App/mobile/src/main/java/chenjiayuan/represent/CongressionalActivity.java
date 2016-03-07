@@ -2,6 +2,7 @@ package chenjiayuan.represent;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -31,7 +32,8 @@ public class CongressionalActivity extends AppCompatActivity {
     private String api = "&apikey=d1ff26dd5fb04253940eae90e286b0ea";
     int repNum = 0;
     int sNum = 0;
-
+    private String mNames = "default";
+    private String mParties = "default";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,9 +51,15 @@ public class CongressionalActivity extends AppCompatActivity {
             populateRepList("location", intent.getStringExtra("lalo"));
         }
 
+        SystemClock.sleep(2000);
+
         //start watch
         Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-        watchIntent.putExtra("mode", intent.getStringExtra("mode")); //mode = "zipcode" or "currentLocation"
+        watchIntent.putExtra("names", mNames);
+        watchIntent.putExtra("parties", mParties);
+        System.out.println("-------------");
+        System.out.println(mNames);
+        System.out.println(mParties);
         startService(watchIntent);
 
         //populate representatives list
@@ -85,10 +93,15 @@ public class CongressionalActivity extends AppCompatActivity {
                     //update number of representatives received
                     repNum = jRepList.getInt("count");
                     JSONArray results = jRepList.optJSONArray("results");
+                    //create strings to pass to phone
+                    StringBuilder namesBuilder = new StringBuilder();
+                    StringBuilder partiesBuilder = new StringBuilder();
+
                     for (int i=0; i<repNum; i++) {
                         JSONObject person = results.getJSONObject(i);
                         System.out.println(person);
                         String name = person.getString("first_name")+" "+person.getString("last_name");
+                        namesBuilder.append(name + "-");
                         String title;
                         if (person.getString("title").equals("Sen")){
                             title = "Senator";
@@ -99,7 +112,8 @@ public class CongressionalActivity extends AppCompatActivity {
                             party = "Republican";
                         } else if (person.getString("party").equals("D")) {
                             party = "Democrat";
-                        } else { party = "Representative"; }
+                        } else { party = "Independent"; }
+                        partiesBuilder.append(party + "-");
                         String email = person.getString("oc_email");
                         String website = person.getString("website");
                         String twitter = person.getString("twitter_id");
@@ -108,6 +122,8 @@ public class CongressionalActivity extends AppCompatActivity {
                         PeopleData.people.add(new Representative(id, name, title, party, email,
                                 website, twitter, term, R.drawable.curry));
                     }
+                    mNames = namesBuilder.toString();
+                    mParties = partiesBuilder.toString();
 
                     //set stat text
                     stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)

@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageApi;
@@ -45,14 +44,14 @@ public class PhoneToWatchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle extras = intent.getExtras();
-        final String mode = extras.getString("mode");
+        final String data = extras.getString("names") + "/" + extras.getString("parties");
 
         // Send the message with the mode
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mApiClient.connect();
-                sendMessage("/" + mode, mode); //mode = "zipcode" or "currentLocation"
+                sendMessage("/msg", data);
             }
         }).start();
         return START_STICKY;
