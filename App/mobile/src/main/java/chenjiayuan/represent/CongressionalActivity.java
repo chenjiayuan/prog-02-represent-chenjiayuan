@@ -61,7 +61,8 @@ public class CongressionalActivity extends AppCompatActivity {
         }
 
         //save county and state data
-        county = intent.getStringExtra("location").split(", ")[0].split(" ")[0]; //Alameda County
+        county = intent.getStringExtra("location").split(", ")[0];
+        county = county.substring(0, county.length() - 7);; //Alameda County
         state = intent.getStringExtra("location").split(", ")[1]; //CA
 
         //display view
@@ -92,10 +93,10 @@ public class CongressionalActivity extends AppCompatActivity {
         watchIntent.putExtra("parties", mParties);
         watchIntent.putExtra("2012votes", m2012vote);
 
-        Log.d("T", "==data to send to watch======");
-        Log.d("T", mNames);
-        Log.d("T", mParties);
-        Log.d("T", m2012vote);
+//        Log.d("T", "==data to send to watch======");
+//        Log.d("T", mNames);
+//        Log.d("T", mParties);
+//        Log.d("T", m2012vote);
         startService(watchIntent);
     }
 
@@ -195,8 +196,8 @@ public class CongressionalActivity extends AppCompatActivity {
                             PeopleData.people.add(new Representative(id, name, title, party, email,
                                     website, twitter, term, R.drawable.curry));
                         }
-                        System.out.println("====peopleDATA.people====");
-                        System.out.println(PeopleData.people);
+                        //System.out.println("====peopleDATA.people====");
+                        //System.out.println(PeopleData.people);
 
                         //set stat text
                         stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(totalNum-sNum)

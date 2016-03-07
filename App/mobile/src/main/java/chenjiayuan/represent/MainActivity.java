@@ -87,11 +87,16 @@ public class MainActivity extends AppCompatActivity implements
                                 try{
                                     JSONObject address_components = addr_1.getJSONObject(0);
                                     JSONArray addr_2 = address_components.optJSONArray("address_components");
-                                    JSONObject jCounty  = addr_2.getJSONObject(2);
-                                    JSONObject jState = addr_2.getJSONObject(3);
-                                    location_county = jCounty.getString("long_name");
-                                    location_state = jState.getString("short_name");
+                                    for (int k=0; k<addr_2.length(); k++) {
+                                        JSONObject obj = addr_2.getJSONObject(k);
+                                        if (obj.getString("long_name").contains("County")) {
+                                            location_county = obj.getString("long_name");
+                                            location_state = addr_2.getJSONObject(k+1).getString("short_name");
+                                        }
+                                    }
                                     Log.d("T", "location found by zipcode: " + location_county + ", " + location_state);
+                                    createIntent();
+                                    //TODO: Chicago issue
                                 } catch (JSONException e) {e.printStackTrace();}
                             }
                         }, new Response.ErrorListener() {
@@ -101,19 +106,24 @@ public class MainActivity extends AppCompatActivity implements
                         });
                 // Access the RequestQueue through your singleton class.
                 MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+            } else {
+                createIntent();
             }
 
-            //TODO: location fetched from above for zipcode is not passed to intent
-            //create intent
-            Intent intent;
-            intent = new Intent(this, CongressionalActivity.class);
-            intent.putExtra("mode", mode);
-            intent.putExtra("location", location_county + ", " + location_state);
-            Log.d("T", "location passed to congressional view: " + location_county + ", " + location_state);
-            intent.putExtra("zipcode", zipcode.getText().toString());
-            intent.putExtra("lalo", latitude+"/"+longitude);
-            startActivity(intent);
         }
+    }
+
+    private void createIntent() {
+        //TODO: location fetched from above for zipcode is not passed to intent
+        //create intent
+        Intent intent;
+        intent = new Intent(this, CongressionalActivity.class);
+        intent.putExtra("mode", mode);
+        intent.putExtra("location", location_county + ", " + location_state);
+        Log.d("T", "location passed to congressional view: " + location_county + ", " + location_state);
+        intent.putExtra("zipcode", zipcode.getText().toString());
+        intent.putExtra("lalo", latitude+"/"+longitude);
+        startActivity(intent);
     }
 
     //clicked location option, will update location_state and location_county
@@ -138,14 +148,16 @@ public class MainActivity extends AppCompatActivity implements
                         try{
                             JSONObject address_components = addr_1.getJSONObject(0);
                             JSONArray addr_2 = address_components.optJSONArray("address_components");
-                            JSONObject jCounty  = addr_2.getJSONObject(3);
-                            JSONObject jState = addr_2.getJSONObject(4);
-
+                            for (int k=0; k<addr_2.length(); k++) {
+                                JSONObject obj = addr_2.getJSONObject(k);
+                                if (obj.getString("long_name").contains("County")) {
+                                    location_county = obj.getString("long_name");
+                                    location_state = addr_2.getJSONObject(k+1).getString("short_name");
+                                }
+                            }
                             //set text of current location
-                            location.setText("Current Location:\n" + jCounty.getString("long_name") + ", "
-                                    + jState.getString("short_name"));
-                            location_county = jCounty.getString("long_name");
-                            location_state = jState.getString("short_name");
+                            location.setText("Current Location:\n" + location_county + ", "
+                                    + location_state);
                             Log.d("T", "location found by la/lo: " + location_county + ", " + location_state);
                         } catch (JSONException e) {e.printStackTrace();}
                     }
