@@ -39,6 +39,7 @@ public class PhoneListenerService extends WearableListenerService {
             Intent indexActivity = new Intent(this, DetailActivity.class);
             //TODO: demo purpose
             Representative r = PeopleData.people.get(Integer.parseInt(value));
+            indexActivity.putExtra("id", r.getId());
             indexActivity.putExtra("name", r.getName());
             indexActivity.putExtra("party", r.getParty());
             indexActivity.putExtra("term", r.getTerm());

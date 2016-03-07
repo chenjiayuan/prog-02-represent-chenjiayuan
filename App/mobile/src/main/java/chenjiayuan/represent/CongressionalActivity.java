@@ -2,7 +2,6 @@ package chenjiayuan.represent;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -32,8 +31,9 @@ public class CongressionalActivity extends AppCompatActivity {
     private String api = "&apikey=d1ff26dd5fb04253940eae90e286b0ea";
     int repNum = 0;
     int sNum = 0;
-    private String mNames = "default";
-    private String mParties = "default";
+    public static String mNames = "default";
+    public static String mParties = "default";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +50,23 @@ public class CongressionalActivity extends AppCompatActivity {
             location.setText(intent.getStringExtra("location"));
             populateRepList("location", intent.getStringExtra("lalo"));
         }
+        //send info to watch
+        startWatch();
+    }
 
-        SystemClock.sleep(2000);
-
-        //start watch
+    private void startWatch() {
+        StringBuilder namesb = new StringBuilder();
+        StringBuilder partysb = new StringBuilder();
+        for (int i=0; i<PeopleData.people.size(); i++) {
+            namesb.append(PeopleData.people.get(i).getName() + "-");
+            partysb.append(PeopleData.people.get(i).getParty() + "-");
+        }
+        mNames = namesb.toString();
+        mParties = partysb.toString();
         Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
         watchIntent.putExtra("names", mNames);
         watchIntent.putExtra("parties", mParties);
-        System.out.println("-------------");
+        System.out.println("=====");
         System.out.println(mNames);
         System.out.println(mParties);
         startService(watchIntent);
@@ -67,11 +76,8 @@ public class CongressionalActivity extends AppCompatActivity {
         registerClickCallback();
     }
 
-    //fake data populator
     private void populateRepList(String mode, String data) {
         String request;
-//        final TextView stat = (TextView) findViewById(R.id.ppl);
-
         //create api link
         if (mode.equals("zipcode")) {
             request= site + "zip=" + data + api;
@@ -86,49 +92,43 @@ public class CongressionalActivity extends AppCompatActivity {
         PeopleData.people = new ArrayList<Representative>();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
             (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
+
                 @Override
                 public void onResponse(JSONObject jRepList) {
-                System.out.println(jRepList);
-                try{
-                    //update number of representatives received
-                    repNum = jRepList.getInt("count");
-                    JSONArray results = jRepList.optJSONArray("results");
-                    //create strings to pass to phone
-                    StringBuilder namesBuilder = new StringBuilder();
-                    StringBuilder partiesBuilder = new StringBuilder();
+                    System.out.println(jRepList);
+                    try{
+                        //update number of representatives received
+                        repNum = jRepList.getInt("count");
+                        JSONArray results = jRepList.optJSONArray("results");
+                        //create strings to pass to phone
+                        for (int i=0; i<repNum; i++) {
+                            JSONObject person = results.getJSONObject(i);
+                            System.out.println(person);
+                            String name = person.getString("first_name")+" "+person.getString("last_name");
+                            String title;
+                            if (person.getString("title").equals("Sen")){
+                                title = "Senator";
+                                sNum++;
+                            } else { title = "Representative"; }
+                            String party;
+                            if (person.getString("party").equals("R")){
+                                party = "Republican";
+                            } else if (person.getString("party").equals("D")) {
+                                party = "Democrat";
+                            } else { party = "Independent"; }
+                            String email = person.getString("oc_email");
+                            String website = person.getString("website");
+                            String twitter = person.getString("twitter_id");
+                            String term = person.getString("term_end");
+                            String id = person.getString("bioguide_id");
+                            PeopleData.people.add(new Representative(id, name, title, party, email,
+                                    website, twitter, term, R.drawable.curry));
+                        }
 
-                    for (int i=0; i<repNum; i++) {
-                        JSONObject person = results.getJSONObject(i);
-                        System.out.println(person);
-                        String name = person.getString("first_name")+" "+person.getString("last_name");
-                        namesBuilder.append(name + "-");
-                        String title;
-                        if (person.getString("title").equals("Sen")){
-                            title = "Senator";
-                            sNum++;
-                        } else { title = "Representative"; }
-                        String party;
-                        if (person.getString("party").equals("R")){
-                            party = "Republican";
-                        } else if (person.getString("party").equals("D")) {
-                            party = "Democrat";
-                        } else { party = "Independent"; }
-                        partiesBuilder.append(party + "-");
-                        String email = person.getString("oc_email");
-                        String website = person.getString("website");
-                        String twitter = person.getString("twitter_id");
-                        String term = person.getString("term_end");
-                        String id = person.getString("bioguide_id");
-                        PeopleData.people.add(new Representative(id, name, title, party, email,
-                                website, twitter, term, R.drawable.curry));
-                    }
-                    mNames = namesBuilder.toString();
-                    mParties = partiesBuilder.toString();
-
-                    //set stat text
-                    stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
-                    + " representatives found!");
-                } catch (JSONException e) {e.printStackTrace();}
+                        //set stat text
+                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(repNum-sNum)
+                        + " representatives found!");
+                    } catch (JSONException e) {e.printStackTrace();}
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -137,6 +137,8 @@ public class CongressionalActivity extends AppCompatActivity {
                 }
             });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+
+        System.out.println(PeopleData.people);
     }
 
     //populate the list view

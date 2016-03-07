@@ -44,7 +44,9 @@ public class PhoneToWatchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle extras = intent.getExtras();
-        final String data = extras.getString("names") + "/" + extras.getString("parties");
+        //final String data = extras.getString("names") + "/" + extras.getString("parties");
+        //final String data = "Jiayuan Chen1-Jiayuan Chen2-Jiayuan Chen3-/Republican-Republican-Democrat-";
+        final String data = "Jiayuan Chen1-Jiayuan Chen2-Jiayuan Chen3-Jiayuan Chen4-/Republican-Republican-Democrat-Democrat-";
 
         // Send the message with the mode
         new Thread(new Runnable() {

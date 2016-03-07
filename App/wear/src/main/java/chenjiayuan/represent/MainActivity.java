@@ -25,14 +25,41 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
-        Log.d("T", "mode is: " + mode);
+
+        //create p
+        if (intent.getStringExtra("name1") == null) { //no reps
+            PageData.p = new Page[][] {
+                {new Page("", "", 0),}
+            };
+        } else if (intent.getStringExtra("name4") != null) { //4 person
+            PageData.p = new Page[][] {
+                {
+                    new Page(intent.getStringExtra("name1"), intent.getStringExtra("party1"), 0),
+                    new Page(intent.getStringExtra("name2"), intent.getStringExtra("party2"), 0),
+                    new Page(intent.getStringExtra("name3"), intent.getStringExtra("party3"), 0),
+                    new Page(intent.getStringExtra("name4"), intent.getStringExtra("party4"), 0),
+                },
+                {
+                    new Page("2012 Presidential Vote", "Emeryville, CA\\nObama: 67% of vote\\nRomney 20% of vote", 0)
+                }
+            };
+        } else { //3 person
+            PageData.p = new Page[][] {
+                {
+                    new Page(intent.getStringExtra("name1"), intent.getStringExtra("party1"), 0),
+                    new Page(intent.getStringExtra("name2"), intent.getStringExtra("party2"), 0),
+                    new Page(intent.getStringExtra("name3"), intent.getStringExtra("party3"), 0),
+                },
+                {
+                    new Page("2012 Presidential Vote", "Emeryville, CA\\nObama: 67% of vote\\nRomney 20% of vote", 0)
+                }
+            };
+        }
 
         //GridViewPager
         final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new SampleGridPagerAdapter(this, getFragmentManager(), mode));
+        pager.setAdapter(new SampleGridPagerAdapter(this, getFragmentManager()));
 
         // ShakeDetector initialization
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
