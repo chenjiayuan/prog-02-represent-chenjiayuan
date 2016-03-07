@@ -50,6 +50,7 @@ public class CongressionalActivity extends AppCompatActivity {
         TextView location = (TextView) findViewById(R.id.loc);
 
         //display location on top, and populate rep list
+        //TODO: data not saved fast enough
         Intent intent = getIntent();
         if (intent.getStringExtra("mode").equals("zipcode")) {
             location.setText("Zipcode " + intent.getStringExtra("zipcode"));
@@ -64,7 +65,6 @@ public class CongressionalActivity extends AppCompatActivity {
         state = intent.getStringExtra("location").split(", ")[1]; //CA
 
         //display view
-        //TODO: data not saved fast enough
         populateListView();
         registerClickCallback();
 
@@ -84,7 +84,7 @@ public class CongressionalActivity extends AppCompatActivity {
         mParties = partysb.toString();
 
         //construct string of 2012vote
-        String m2012vote = get2012Vote(county, state); //TODO: county state not updated
+        String m2012vote = get2012Vote(county, state);
 
         //create intent
         Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
@@ -92,7 +92,6 @@ public class CongressionalActivity extends AppCompatActivity {
         watchIntent.putExtra("parties", mParties);
         watchIntent.putExtra("2012votes", m2012vote);
 
-        //TODO: mNames and mParties not saved from populateRepList
         Log.d("T", "==data to send to watch======");
         Log.d("T", mNames);
         Log.d("T", mParties);
