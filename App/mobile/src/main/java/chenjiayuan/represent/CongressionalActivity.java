@@ -24,22 +24,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class CongressionalActivity extends AppCompatActivity {
     private String site = "http://congress.api.sunlightfoundation.com/legislators/locate?";
     private String api = "&apikey=d1ff26dd5fb04253940eae90e286b0ea";
-    int repNum = 0;
-    int sNum = 0;
-    public static String mNames = "default";
-    public static String mParties = "default";
+    private int repNum = 0;
+    private int sNum = 0;
+    private String mNames = "default";
+    private String mParties = "default";
+    private String county = "Franklin County";
+    private String state = "AR";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congressional);
         TextView location = (TextView) findViewById(R.id.loc);
-        TextView stat = (TextView) findViewById(R.id.ppl);
 
         //display location
         Intent intent = getIntent();
@@ -50,6 +53,11 @@ public class CongressionalActivity extends AppCompatActivity {
             location.setText(intent.getStringExtra("location"));
             populateRepList("location", intent.getStringExtra("lalo"));
         }
+
+        //save county and state data
+        county = intent.getStringExtra("location").split(", ")[0];
+        state = intent.getStringExtra("location").split(", ")[1];
+
         //send info to watch
         startWatch();
     }
@@ -63,12 +71,15 @@ public class CongressionalActivity extends AppCompatActivity {
         }
         mNames = namesb.toString();
         mParties = partysb.toString();
+        String m2012vote = get2012Vote(county, state); //TODO: county state not updated
         Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
         watchIntent.putExtra("names", mNames);
         watchIntent.putExtra("parties", mParties);
+        watchIntent.putExtra("2012votes", m2012vote);
         System.out.println("=====");
         System.out.println(mNames);
         System.out.println(mParties);
+        System.out.println(m2012vote);
         startService(watchIntent);
 
         //populate representatives list
@@ -76,6 +87,53 @@ public class CongressionalActivity extends AppCompatActivity {
         registerClickCallback();
     }
 
+    //search for 2012 vote data based on County + State
+    private String get2012Vote(String county, String state) {
+        String voteString = loadJSONFromAsset();
+        String concatVoteData = null;
+        try {
+            JSONArray jVote = new JSONArray(voteString);
+            int jVoteLength = jVote.length();
+            //search through match attributes
+            System.out.println(county.split(" ")[0]);
+            System.out.println(state);
+            for(int i=0; i < jVoteLength; i++) {
+                JSONObject loc = jVote.getJSONObject(i);
+                System.out.println(loc);
+                if(loc.getString("county-name").equals(county.split(" ")[0]) && loc.getString("state-postal").equals(state)) {
+                    //location match!
+                    String obamaVote = Double.toString(loc.getDouble("obama-percentage"));
+                    String romneyVote = Double.toString(loc.getDouble("romney-percentage"));
+                    concatVoteData = county.split(" ")[0] + "-" + state + "-" + obamaVote + "-" + romneyVote + "-";
+                    System.out.println(concatVoteData);
+                    return concatVoteData;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return concatVoteData;
+    }
+
+    //load Json from asset directory
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("election-county-2012.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    //save list of API fetched reps to data structure
     private void populateRepList(String mode, String data) {
         String request;
         //create api link

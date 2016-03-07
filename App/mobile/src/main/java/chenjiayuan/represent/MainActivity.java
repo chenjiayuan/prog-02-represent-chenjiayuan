@@ -40,11 +40,11 @@ public class MainActivity extends AppCompatActivity implements
     //default current location: Emeryville
     String latitude = "37.8312983";
     String longitude = "-122.2849983";
-    String location_county = "Emeryville";
-    String location_state = "CA";
+    String location_county = "Franklin County";
+    String location_state = "AR";
 
     //Google API
-    String site = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    String site = "https://maps.googleapis.com/maps/api/geocode/json?";
     String api = "&key=AIzaSyAWGQa5PmTMdLylcOKGOn2XbKMI9DaXoik";
 
     @Override
@@ -69,13 +69,42 @@ public class MainActivity extends AppCompatActivity implements
         location.setVisibility(View.GONE);
     } //onCreate
 
+    //click
     public void searchClickHandler(View view) {
         if (view.getId() == R.id.searchButton) {
+            //first get location for zipcode
+            //zipcode: https://maps.googleapis.com/maps/api/geocode/json?address=30332&sensor=false&key=AIzaSyAWGQa5PmTMdLylcOKGOn2XbKMI9DaXoik
+            String url = site + "address=" + zipcode.getText().toString() + "&sensor=false" + api;
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject jLocation) {
+                            JSONArray addr_1 = jLocation.optJSONArray("results");
+                            try{
+                                JSONObject address_components = addr_1.getJSONObject(0);
+                                JSONArray addr_2 = address_components.optJSONArray("address_components");
+                                JSONObject jCounty  = addr_2.getJSONObject(3);
+                                JSONObject jState = addr_2.getJSONObject(4);
+                                location_county = jCounty.getString("long_name");
+                                location_state = jState.getString("short_name");
+                            } catch (JSONException e) {e.printStackTrace();}
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+            // Access the RequestQueue through your singleton class.
+            MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+
+            //create intent
             Intent intent;
             intent = new Intent(this, CongressionalActivity.class);
             //TODO: use bundle instead
             intent.putExtra("mode", mode);
-            intent.putExtra("location", location_county + ", " + location_state);
+            intent.putExtra("location", location_county + ", " + location_state); //send this info for 2012 view
+            System.out.println("location passed to congressional view: " + location_county + ", " + location_state);
             intent.putExtra("zipcode", zipcode.getText().toString());
             intent.putExtra("lalo", latitude+"/"+longitude);
             startActivity(intent);
@@ -93,12 +122,11 @@ public class MainActivity extends AppCompatActivity implements
             mode = "currentLocation";
 
             //fetch api
-            String url = site + latitude + "," + longitude + api;
+            String url = site + "latlng=" + latitude + "," + longitude + api;
             JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jLocation) {
-                        System.out.println(jLocation);
                         JSONArray addr_1 = jLocation.optJSONArray("results");
                         try{
                             JSONObject address_components = addr_1.getJSONObject(0);
@@ -123,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements
             MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         }
     }
+
     public void zipcodeOptionClicked(View view) {
         if (view.getId() == R.id.use_zipcode) {
             location = (TextView) findViewById(R.id.location_option);
