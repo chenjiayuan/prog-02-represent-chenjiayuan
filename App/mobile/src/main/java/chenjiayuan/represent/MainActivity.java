@@ -67,64 +67,65 @@ public class MainActivity extends AppCompatActivity implements
         Fabric.with(this, new Twitter(authConfig));
         //initialize Google api
 
-        Intent randomIntent = getIntent();
-        if (randomIntent.getStringExtra("shake") != null) {
-            Log.d("T", "shake detected");
-            latitude = randomIntent.getStringExtra("latitude");
-            longitude = randomIntent.getStringExtra("longitude");
+//        Intent randomIntent = getIntent();
+//        if (randomIntent.getStringExtra("shake") != null) {
+//            Log.d("T", "shake detected");
+//            latitude = randomIntent.getStringExtra("latitude");
+//            longitude = randomIntent.getStringExtra("longitude");
+//
+//            //directly fetch api
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addApi(LocationServices.API)
+//                    .addApi(Wearable.API)  // used for data layer API
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .build();
+//            String url = site + "latlng=" + latitude + "," + longitude + api;
+//            Log.d("T", "api sent for random la/lo: " + url);
+//            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+//                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject jLocation) {
+//                            Log.d("T", "debug onResponse.......");
+//                            JSONArray addr_1 = jLocation.optJSONArray("results");
+//                            try{
+//                                JSONObject address_components = addr_1.getJSONObject(0);
+//                                JSONArray addr_2 = address_components.optJSONArray("address_components");
+//                                for (int k=0; k<addr_2.length(); k++) {
+//                                    JSONObject obj = addr_2.getJSONObject(k);
+//                                    if (obj.getString("long_name").contains("County")) {
+//                                        location_county = obj.getString("long_name");
+//                                        location_state = addr_2.getJSONObject(k+1).getString("short_name");
+//                                    }
+//                                }
+//                                mode = "currentLocation";
+//                                createIntent();
+//                                Log.d("T", "location found by random la/lo: " + location_county + ", " + location_state);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }, new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            // TODO Auto-generated method stub
+//                        }
+//                    });
+//        } else {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addApi(Wearable.API)  // used for data layer API
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
 
-            //directly fetch api
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Wearable.API)  // used for data layer API
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-            String url = site + "latlng=" + latitude + "," + longitude + api;
-            Log.d("T", "api sent for random la/lo: " + url);
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject jLocation) {
-                            Log.d("T", "debug onResponse.......");
-                            JSONArray addr_1 = jLocation.optJSONArray("results");
-                            try{
-                                JSONObject address_components = addr_1.getJSONObject(0);
-                                JSONArray addr_2 = address_components.optJSONArray("address_components");
-                                for (int k=0; k<addr_2.length(); k++) {
-                                    JSONObject obj = addr_2.getJSONObject(k);
-                                    if (obj.getString("long_name").contains("County")) {
-                                        location_county = obj.getString("long_name");
-                                        location_state = addr_2.getJSONObject(k+1).getString("short_name");
-                                    }
-                                }
-                                mode = "currentLocation";
-                                createIntent();
-                                Log.d("T", "location found by random la/lo: " + location_county + ", " + location_state);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // TODO Auto-generated method stub
-                        }
-                    });
-        } else {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Wearable.API)  // used for data layer API
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
             //get the buttons and textboxes
             setContentView(R.layout.activity_main);
             location = (TextView) findViewById(R.id.location_option);
             zipcode = (EditText) findViewById(R.id.zip_option);
             zipcode.setVisibility(View.VISIBLE);
             location.setVisibility(View.GONE);
-        }
+//        }
     } //onCreate
 
     //click search button
