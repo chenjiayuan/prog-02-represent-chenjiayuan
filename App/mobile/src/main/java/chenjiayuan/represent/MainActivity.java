@@ -26,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -51,24 +53,61 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //prevent keyboard appear automatically
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        super.onCreate(savedInstanceState);
 
-        //initialize Google api
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addApi(Wearable.API)  // used for data layer API
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+//        Intent randomIntent = getIntent();
+//        if (randomIntent.getStringExtra("mode").equals("shakeIt")) {
+//            latitude = randomIntent.getStringExtra("latitude");
+//            longitude = randomIntent.getStringExtra("longitude");
+//
+//            //directly fetch api
+//            String url = site + "latlng=" + latitude + "," + longitude + api;
+//            Log.d("T", "api sent for random la/lo: " + url);
+//            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+//                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject jLocation) {
+//                            JSONArray addr_1 = jLocation.optJSONArray("results");
+//                            try{
+//                                JSONObject address_components = addr_1.getJSONObject(0);
+//                                JSONArray addr_2 = address_components.optJSONArray("address_components");
+//                                for (int k=0; k<addr_2.length(); k++) {
+//                                    JSONObject obj = addr_2.getJSONObject(k);
+//                                    if (obj.getString("long_name").contains("County")) {
+//                                        location_county = obj.getString("long_name");
+//                                        location_state = addr_2.getJSONObject(k+1).getString("short_name");
+//                                    }
+//                                }
+//                                mode = "currentLocation";
+//                                createIntent();
+//                                Log.d("T", "location found by random la/lo: " + location_county + ", " + location_state);
+//                            } catch (JSONException e) {e.printStackTrace();}
+//                        }
+//                    }, new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            // TODO Auto-generated method stub
+//                        }
+//                    });
+//        } else {
+            //prevent keyboard appear automatically
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+            super.onCreate(savedInstanceState);
 
-        //get the buttons and textboxes
-        setContentView(R.layout.activity_main);
-        location = (TextView) findViewById(R.id.location_option);
-        zipcode = (EditText) findViewById(R.id.zip_option);
-        zipcode.setVisibility(View.VISIBLE);
-        location.setVisibility(View.GONE);
+            //initialize Google api
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addApi(Wearable.API)  // used for data layer API
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+
+            //get the buttons and textboxes
+            setContentView(R.layout.activity_main);
+            location = (TextView) findViewById(R.id.location_option);
+            zipcode = (EditText) findViewById(R.id.zip_option);
+            zipcode.setVisibility(View.VISIBLE);
+            location.setVisibility(View.GONE);
+//        }
     } //onCreate
 
     //click search button
@@ -123,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.d("T", "location passed to congressional view: " + location_county + ", " + location_state);
         intent.putExtra("zipcode", zipcode.getText().toString());
         intent.putExtra("lalo", latitude+"/"+longitude);
+        Log.d("T", "lalo: " + latitude+"/"+longitude);
         startActivity(intent);
     }
 
@@ -247,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mLastLocation != null) {
             Log.d("T", "latitude = " + String.valueOf(mLastLocation.getLatitude()));
             latitude = String.valueOf(mLastLocation.getLatitude());
-            Log.d("T", "latitude = " + String.valueOf(mLastLocation.getLongitude()));
+            Log.d("T", "longitude = " + String.valueOf(mLastLocation.getLongitude()));
             longitude = String.valueOf(mLastLocation.getLongitude());
         } else {
             Log.d("T", "null latitude and longitude");

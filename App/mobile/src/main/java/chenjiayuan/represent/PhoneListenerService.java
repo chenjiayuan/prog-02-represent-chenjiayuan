@@ -7,6 +7,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 /**
  * Created by chenjiayuan on 2/27/16.
@@ -23,12 +24,19 @@ public class PhoneListenerService extends WearableListenerService {
             // Value contains the String we sent over in WatchToPhoneService, "good job"
             String value = new String(messageEvent.getData(), StandardCharsets.UTF_8);
 
-            Intent randomIntent = new Intent(this, CongressionalActivity.class);
-            //TODO: use bundle instead
-            randomIntent.putExtra("mode", "currentLocation");
-            double longitude = Math.random() * Math.PI * 2;
-            double latitude = Math.acos(Math.random() * 2 - 1);
-            randomIntent.putExtra("location", "Random location:\n" + String.valueOf(longitude) + ", " + String.valueOf(latitude));
+            //generate a set of random coordinates within US
+            Random rand = new Random();
+            int lat1 = rand.nextInt((41 - 33) + 1) + 33;
+            int lat2 = rand.nextInt(1000000);
+            int lon1 = rand.nextInt((116 - 83) + 1) + 83;
+            int lon2 = rand.nextInt(1000000);
+            String latitude = Integer.toString(lat1) + "." + Integer.toString(lat2);
+            String longitude = "-" + Integer.toString(lon1) + "." + Integer.toString(lon2);
+            Log.d("T", "rand location is " + latitude + " " + longitude);
+            Intent randomIntent = new Intent(this, MainActivity.class);
+            randomIntent.putExtra("mode", "shakeIt");
+            randomIntent.putExtra("latitude", latitude);
+            randomIntent.putExtra("longitude", longitude);
             randomIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(randomIntent);
         } else if (messageEvent.getPath().equalsIgnoreCase(SELECT)) {

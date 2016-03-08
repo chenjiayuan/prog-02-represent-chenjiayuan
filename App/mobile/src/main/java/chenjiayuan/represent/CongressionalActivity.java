@@ -40,8 +40,8 @@ public class CongressionalActivity extends AppCompatActivity {
     //value to send to watch
     private String mNames = "defaultNames";
     private String mParties = "defaultParties";
-    private String county = "Mohave";
-    private String state = "AZ";
+    private String county = "Default";
+    private String state = "Default";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -58,7 +58,7 @@ public class WatchToPhoneService extends Service {
         index = extras.getString("index");
         Log.d("T", "received mode: " + mode);
         mWatchApiClient.connect();
-        sendMessage("/" + mode, index); // ('/shake', 'shake')
+        sendMessage("/" + mode, index); // ('/shake', '-1')
         Log.d("T", "mWatchApiClient.connect() called");
         return START_NOT_STICKY;
     }
