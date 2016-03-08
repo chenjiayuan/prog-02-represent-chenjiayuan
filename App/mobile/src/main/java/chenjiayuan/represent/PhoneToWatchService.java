@@ -46,8 +46,9 @@ public class PhoneToWatchService extends Service {
         Bundle extras = intent.getExtras();
 
         //TODO fix hard code issue
-        //final String data = extras.getString("names") + "/" + extras.getString("parties") + extras.getString("2012votes");
-        final String data = "Jiayuan Chen1-Jiayuan Chen2-Jiayuan Chen3-/Republican-Republican-Democrat-/Alameda-CA-78.5-18.7-";
+        final String data = extras.getString("names") + "/" +
+                extras.getString("parties") + "/" + extras.getString("2012votes");
+        //final String data = "Jiayuan Chen1-Jiayuan Chen2-Jiayuan Chen3-/Republican-Republican-Democrat-/Alameda-CA-78.5-18.7-";
         //final String data = "Jiayuan Chen1-Jiayuan Chen2-Jiayuan Chen3-Jiayuan Chen4-/Republican-Republican-Democrat-Democrat-";
 
         // Send the message with the mode

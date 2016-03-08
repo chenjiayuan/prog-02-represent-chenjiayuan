@@ -52,120 +52,38 @@ public class CongressionalActivity extends AppCompatActivity {
         //display location on top, and populate rep list
         //TODO: data not saved fast enough
         Intent intent = getIntent();
-        if (intent.getStringExtra("mode").equals("zipcode")) {
-            location.setText("Zipcode " + intent.getStringExtra("zipcode"));
-            populateRepList("zipcode", intent.getStringExtra("zipcode"));
-        } else {
-            location.setText(intent.getStringExtra("location"));
-            populateRepList("location", intent.getStringExtra("lalo"));
-        }
-
-        //save county and state data
         county = intent.getStringExtra("location").split(", ")[0];
         county = county.substring(0, county.length() - 7);; //Alameda County
         state = intent.getStringExtra("location").split(", ")[1]; //CA
 
-        //display view
-        populateListView();
-        registerClickCallback();
 
-        //send info to watch
-        startWatch();
-    }
-
-    private void startWatch() {
-        //construct strings of names and parties
-        StringBuilder namesb = new StringBuilder();
-        StringBuilder partysb = new StringBuilder();
-        for (int i=0; i<PeopleData.people.size(); i++) {
-            namesb.append(PeopleData.people.get(i).getName() + "-");
-            partysb.append(PeopleData.people.get(i).getParty() + "-");
+        if (intent.getStringExtra("mode").equals("zipcode")) {
+            location.setText("Zipcode " + intent.getStringExtra("zipcode"));
+        } else {
+            location.setText(intent.getStringExtra("location"));
         }
-        mNames = namesb.toString();
-        mParties = partysb.toString();
 
-        //construct string of 2012vote
-        String m2012vote = get2012Vote(county, state);
-
-        //create intent
-        Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-        watchIntent.putExtra("names", mNames);
-        watchIntent.putExtra("parties", mParties);
-        watchIntent.putExtra("2012votes", m2012vote);
-
-//        Log.d("T", "==data to send to watch======");
-//        Log.d("T", mNames);
-//        Log.d("T", mParties);
-//        Log.d("T", m2012vote);
-        startService(watchIntent);
-    }
-
-    //search for 2012 vote data based on County + State
-    private String get2012Vote(String county, String state) {
-        String voteString = loadJSONFromAsset();
-        String concatVoteData = null;
-
-        try {
-            JSONArray jVote = new JSONArray(voteString);
-            int jVoteLength = jVote.length();
-
-            //search through match attributes
-            Log.d("T", "Location to search in election json: " + county + " " + state);
-            for(int i=0; i < jVoteLength; i++) {
-                JSONObject loc = jVote.getJSONObject(i);
-                if(loc.getString("county-name").equals(county) && loc.getString("state-postal").equals(state)) {
-                    //location match!
-                    String obamaVote = Double.toString(loc.getDouble("obama-percentage"));
-                    String romneyVote = Double.toString(loc.getDouble("romney-percentage"));
-
-                    //concatenate 2012 vote data here
-                    concatVoteData = county + "-" + state + "-" + obamaVote + "-" + romneyVote + "-";
-                    Log.d("T", "string constructed: " + concatVoteData);
-                    return concatVoteData;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return concatVoteData;
-    }
-
-    //load Json from asset directory
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getAssets().open("election-county-2012.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
+        populateRepList(intent.getStringExtra("mode"),
+                intent.getStringExtra("zipcode"), intent.getStringExtra("lalo"));
     }
 
     //save list of API fetched reps to data structure
-    private void populateRepList(String mode, String data) {
+    private void populateRepList(String mode, String zipcode, String location) {
         String request;
         //create api link
         if (mode.equals("zipcode")) {
-            request= site + "zip=" + data + api;
+            request= site + "zip=" + zipcode + api;
         } else {
-            String[] lalo = data.split("/");
+            String[] lalo = location.split("/");
             request = site + "latitude=" + lalo[0] + "&longitude=" + lalo[1] + api;
         }
 
         //send api request
+        Log.d("T", "request to sunlight: " + request);
         final TextView stat = (TextView) findViewById(R.id.ppl);
-
         PeopleData.people = new ArrayList<Representative>();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
             (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
-
                 @Override
                 public void onResponse(JSONObject jRepList) {
                     try{
@@ -196,12 +114,15 @@ public class CongressionalActivity extends AppCompatActivity {
                             PeopleData.people.add(new Representative(id, name, title, party, email,
                                     website, twitter, term, R.drawable.curry));
                         }
-                        //System.out.println("====peopleDATA.people====");
-                        //System.out.println(PeopleData.people);
-
                         //set stat text
-                        stat.setText(Integer.toString(sNum)+" senators and " + Integer.toString(totalNum-sNum)
-                        + " representatives found!");
+                        stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
+                                + " representatives found!");
+                        //send info to watch
+                        startWatch();
+
+                        //display view
+                        populateListView();
+                        registerClickCallback();
                     } catch (JSONException e) {e.printStackTrace();}
                 }
             }, new Response.ErrorListener() {
@@ -211,6 +132,79 @@ public class CongressionalActivity extends AppCompatActivity {
                 }
             });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+    }
+
+    private void startWatch() {
+        //construct strings of names and parties
+        StringBuilder namesb = new StringBuilder();
+        StringBuilder partysb = new StringBuilder();
+        for (int i=0; i<PeopleData.people.size(); i++) {
+            namesb.append(PeopleData.people.get(i).getName() + "-");
+            partysb.append(PeopleData.people.get(i).getParty() + "-");
+        }
+        mNames = namesb.toString();
+        mParties = partysb.toString();
+
+        //construct string of 2012vote
+        String m2012vote = get2012Vote(county, state);
+
+        //create intent
+        Intent watchIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
+        watchIntent.putExtra("names", mNames);
+        watchIntent.putExtra("parties", mParties);
+        watchIntent.putExtra("2012votes", m2012vote);
+        Log.d("T", "==data to send to watch======");
+        Log.d("T", mNames);
+        Log.d("T", mParties);
+        Log.d("T", m2012vote);
+        startService(watchIntent);
+    }
+
+    //search for 2012 vote data based on County + State
+    private String get2012Vote(String county, String state) {
+        String voteString = loadJSONFromAsset();
+        String concatVoteData = null;
+
+        try {
+            JSONArray jVote = new JSONArray(voteString);
+            int jVoteLength = jVote.length();
+
+            //search through match attributes
+            Log.d("T", "Location to search in election json: " + county + " " + state);
+            for(int i=0; i < jVoteLength; i++) {
+                JSONObject loc = jVote.getJSONObject(i);
+                if(loc.getString("county-name").equals(county) && loc.getString("state-postal").equals(state)) {
+                    //location match!
+                    String obamaVote = Double.toString(loc.getDouble("obama-percentage"));
+                    String romneyVote = Double.toString(loc.getDouble("romney-percentage"));
+
+                    //concatenate 2012 vote data here
+                    concatVoteData = county + "-" + state + "-" + obamaVote + "-" + romneyVote + "-";
+                    return concatVoteData;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return concatVoteData;
+    }
+
+    //load Json from asset directory
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("election-county-2012.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 
     //populate the list view

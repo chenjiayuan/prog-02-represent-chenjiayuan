@@ -28,8 +28,8 @@ public class MainActivity extends Activity {
         Intent intent = getIntent();
         String voteStat = new StringBuilder().append(intent.getStringExtra("voteCounty"))
                 .append(", ").append(intent.getStringExtra("voteState")).append("\nObama: ")
-                .append(intent.getStringExtra("obama")).append("% of vote \nRomney ")
-                .append(intent.getStringExtra("romney")).append("% of vote").toString();
+                .append(intent.getStringExtra("obama")).append("%\nRomney ")
+                .append(intent.getStringExtra("romney")).append("%").toString();
 
         //create p
         if (intent.getStringExtra("name1") == null) { //no reps
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
                     new Page(intent.getStringExtra("name3"), intent.getStringExtra("party3"), 0),
                 },
                 {
-                    new Page("2012 Presidential Vote", voteStat, 0),
+                    new Page("2012 Vote", voteStat, 0),
                             //Emeryville, CA Obama: 67% of vote Romney 20% of vote
                 }
             };
