@@ -36,6 +36,9 @@
 
         <activity android:name=".CongressionalActivity" />
         <activity android:name=".DetailActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b77c84b09ac8f6905017e1e4a4790a0e1191ffaa" />
     </application>
 
 </manifest>

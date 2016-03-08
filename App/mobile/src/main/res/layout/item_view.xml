@@ -96,7 +96,6 @@
             android:text="@string/tweet"
             android:layout_alignTop="@+id/twitter_logo"
             android:layout_toEndOf="@+id/twitter_logo" />
-
     </RelativeLayout>
 
 

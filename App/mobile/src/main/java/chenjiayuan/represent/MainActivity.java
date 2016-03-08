@@ -21,14 +21,23 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.Wearable;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "xDCRIJ1Qe9W6vxz8XCdvkvVK4";
+    private static final String TWITTER_SECRET = "thwaz8A9XkfmSk1kKAjftbdcjhOL4J0FsWTB0XPKI0hqeUrggX";
+
 
     private GoogleApiClient mGoogleApiClient;
     TextView location;
@@ -54,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements
         //prevent keyboard appear automatically
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         //initialize Google api
 
         Intent randomIntent = getIntent();
