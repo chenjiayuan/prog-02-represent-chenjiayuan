@@ -34,7 +34,7 @@ public class PhoneListenerService extends WearableListenerService {
             String longitude = "-" + Integer.toString(lon1) + "." + Integer.toString(lon2);
             Log.d("T", "rand location is " + latitude + " " + longitude);
             Intent randomIntent = new Intent(this, MainActivity.class);
-            randomIntent.putExtra("mode", "shakeIt");
+            randomIntent.putExtra("shake", "yes");
             randomIntent.putExtra("latitude", latitude);
             randomIntent.putExtra("longitude", longitude);
             randomIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
