@@ -1,6 +1,7 @@
 package chenjiayuan.represent;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -140,7 +141,7 @@ public class CongressionalActivity extends AppCompatActivity {
                         }
                         //set stat text
                         stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
-                                + " representatives found!");
+                                + " representatives found");
                         //send info to watch
                         startWatch();
 
@@ -277,6 +278,7 @@ public class CongressionalActivity extends AppCompatActivity {
             });
 
             // Fill the view
+
             ImageView imageView = (ImageView)itemView.findViewById(R.id.profile_pic);
             imageView.setImageResource(r.getPic());
             TextView nameText = (TextView) itemView.findViewById(R.id.name);
@@ -284,8 +286,13 @@ public class CongressionalActivity extends AppCompatActivity {
             TextView roleText = (TextView) itemView.findViewById(R.id.role);
             roleText.setText(r.getRole());
             TextView partyText = (TextView) itemView.findViewById(R.id.party);
-            //TODO: email and website not clickable
             partyText.setText(r.getParty());
+            if (r.getParty().equals("Republican")) {
+                partyText.setTextColor(Color.parseColor("#F44336"));
+            } else if (r.getParty().equals("Independent")) {
+                partyText.setTextColor(Color.parseColor("#4CAF50"));
+            }
+            //TODO: email not clickable
             TextView emailText = (TextView) itemView.findViewById(R.id.email);
             emailText.setText(r.getEmail());
             TextView webText = (TextView) itemView.findViewById(R.id.website);

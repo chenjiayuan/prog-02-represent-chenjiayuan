@@ -1,6 +1,7 @@
 package chenjiayuan.represent;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -32,6 +33,11 @@ public class DetailActivity extends AppCompatActivity {
         roleText.setText(intent.getStringExtra("role"));
         TextView partyText = (TextView) findViewById(R.id.party);
         partyText.setText(intent.getStringExtra("party"));
+        if (intent.getStringExtra("party").equals("Republican")) {
+            partyText.setTextColor(Color.parseColor("#F44336"));
+        } else if (intent.getStringExtra("party").equals("Independent")) {
+            partyText.setTextColor(Color.parseColor("#4CAF50"));
+        }
         TextView termText = (TextView) findViewById(R.id.term);
         termText.setText("Term End Date: " + intent.getStringExtra("term"));
         ImageView profilePic = (ImageView) findViewById(R.id.profile_pic);
@@ -64,7 +70,7 @@ public class DetailActivity extends AppCompatActivity {
                     for (int i=0; i<committeCount; i++) {
                         JSONObject committe = results.getJSONObject(i);
                         System.out.println(committe);
-                        sb.append("►" + committe.getString("name")+"\n");
+                        sb.append("► [" + committe.getString("committee_id") + "] " + committe.getString("name")+"\n");
                     }
                     comList.setText(sb.toString());
                 } catch (JSONException e) {e.printStackTrace();}
@@ -90,7 +96,7 @@ public class DetailActivity extends AppCompatActivity {
                         if (results.getJSONObject(i) != null) {
                             JSONObject bill = results.getJSONObject(i);
                             System.out.println(bill);
-                            sb.append("►" + bill.getString("official_title")+"\n");
+                            sb.append("► [" + bill.getString("bill_id") + "] " + bill.getString("official_title")+"\n");
                         }
                     }
                     billList.setText(sb.toString());
