@@ -101,7 +101,7 @@ public class PhoneListenerService extends WearableListenerService {
             indexActivity.putExtra("party", r.getParty());
             indexActivity.putExtra("term", r.getTerm());
             indexActivity.putExtra("role", r.getRole());
-            indexActivity.putExtra("picID", Integer.toString(r.getPic()));
+            indexActivity.putExtra("picID", r.getPicURL());
             indexActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(indexActivity);
         } else {

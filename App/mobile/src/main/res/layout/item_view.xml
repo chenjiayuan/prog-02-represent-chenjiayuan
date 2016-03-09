@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -99,12 +100,25 @@
         <TextView
             android:id="@+id/tweet"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:textColor="@android:color/black"
             android:text="@string/tweet"
             android:layout_alignTop="@+id/twitter_logo"
             android:layout_toEndOf="@+id/twitter_logo" />
     </RelativeLayout>
 
+    <!--<FrameLayout-->
+        <!--android:layout_marginTop="300dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:twittersdk="http://schemas.android.com/apk/res-auto">-->
 
+        <!--<com.twitter.sdk.android.tweetui.TweetView-->
+            <!--android:id="@+id/bike_tweet"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--twittersdk:tw__tweet_id="510908133917487104"/>-->
+
+    <!--</FrameLayout>-->
 </RelativeLayout>

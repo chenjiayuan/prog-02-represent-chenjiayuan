@@ -12,10 +12,10 @@ public class Representative {
     private String website;
     private String lastTweet;
     private String term;
-    private int picID;
+    private String picURL;
 
     public Representative(String id, String name, String role, String party, String email,
-                          String website, String lastTweet, String term, int picID) {
+                          String website, String lastTweet, String term, String picURL) {
         super();
         this.id = id;
         this.name = name;
@@ -25,7 +25,7 @@ public class Representative {
         this.website = website;
         this.lastTweet = lastTweet;
         this.term = term;
-        this.picID = picID;
+        this.picURL = picURL;
     }
 
     public String getId() {
@@ -50,8 +50,14 @@ public class Representative {
     public String getTerm() {
         return term;
     }
-    public int getPic() {
-        return picID;
+    public String getPicURL() {
+        return picURL;
+    }
+    public void setLastTweet(String t) {
+        this.lastTweet = t;
+    }
+    public void setPicURL(String url) {
+        this.picURL = url;
     }
 }
 /*

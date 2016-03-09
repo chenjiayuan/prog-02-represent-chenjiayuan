@@ -43,11 +43,11 @@ public class DetailActivity extends AppCompatActivity {
         TextView termText = (TextView) findViewById(R.id.term);
         termText.setText("Term End Date: " + intent.getStringExtra("term"));
         ImageView profilePic = (ImageView) findViewById(R.id.profile_pic);
-        profilePic.setImageResource(Integer.parseInt(intent.getStringExtra("picID")));
+        profilePic.setTag(intent.getStringExtra("picID"));
+        new DownloadImageTask().execute(profilePic);
+        //profilePic.setImageResource(intent.getStringExtra("picID"));
 
         populateCongressBill(intent.getStringExtra("id"));
-
-
     }
 
     private void populateCongressBill(String id) {
@@ -98,7 +98,7 @@ public class DetailActivity extends AppCompatActivity {
                         if (results.getJSONObject(i) != null) {
                             JSONObject bill = results.getJSONObject(i);
                             System.out.println(bill);
-                            sb.append("► [" + bill.getString("bill_id") + "] " + bill.getString("official_title")+"\n");
+                            sb.append("► [" + bill.getString("introduced_on") + "] " + bill.getString("official_title")+"\n");
                         }
                     }
                     billList.setText(sb.toString());

@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,7 +23,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.Wearable;
 import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-    private static final String TWITTER_KEY = "xDCRIJ1Qe9W6vxz8XCdvkvVK4";
-    private static final String TWITTER_SECRET = "thwaz8A9XkfmSk1kKAjftbdcjhOL4J0FsWTB0XPKI0hqeUrggX";
-
+    private static final String TWITTER_KEY = "92oqTFtTG8I3ctI86jGCpgiqY";
+    private static final String TWITTER_SECRET = "lsZuJ0uIhfkU5kvmAGbXuhy16GDMAwVIJHs6qFtncYw3LEv9be";
+    private TwitterLoginButton loginButton;
 
     private GoogleApiClient mGoogleApiClient;
     TextView location;
@@ -63,8 +69,12 @@ public class MainActivity extends AppCompatActivity implements
         //prevent keyboard appear automatically
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         super.onCreate(savedInstanceState);
+
+        //initialize twitter api
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+
+        //initialize google api
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addApi(Wearable.API)  // used for data layer API
@@ -74,11 +84,41 @@ public class MainActivity extends AppCompatActivity implements
 
         //get the buttons and textboxes
         setContentView(R.layout.activity_main);
+
+        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        loginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // The TwitterSession is also available through:
+                // Twitter.getInstance().core.getSessionManager().getActiveSession()
+                TwitterSession session = result.data;
+                // TODO: Remove toast and use the TwitterSession's userID
+                // with your app's user model
+                String msg = "@" + session.getUserName() + " logged in! (#" + session.getUserId() + ")";
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                loginButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.d("TwitterKit", "Login with Twitter failure", exception);
+            }
+        });
+
         location = (TextView) findViewById(R.id.location_option);
         zipcode = (EditText) findViewById(R.id.zip_option);
         zipcode.setVisibility(View.VISIBLE);
         location.setVisibility(View.GONE);
+
     } //onCreate
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Make sure that the loginButton hears the result from any
+        // Activity that it triggered.
+        loginButton.onActivityResult(requestCode, resultCode, data);
+    }
 
     //click search button
     public void searchClickHandler(View view) {

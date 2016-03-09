@@ -21,7 +21,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="center"
         android:textSize="20dp"
-        android:layout_marginTop="-5dp"/>
+        android:layout_marginTop="-5dp"
+        android:id="@+id/textView" />
 
     <RelativeLayout
         android:layout_below="@id/all_people"
@@ -51,6 +52,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:id="@+id/use_location" />
+
     </RelativeLayout>
 
 
@@ -95,4 +97,12 @@
         android:layout_marginLeft="120dp"
         android:onClick="TextViewClicked"
         android:text="" />
+
+    <com.twitter.sdk.android.core.identity.TwitterLoginButton
+        android:id="@+id/twitter_login_button"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

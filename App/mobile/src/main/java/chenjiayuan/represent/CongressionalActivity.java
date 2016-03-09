@@ -20,6 +20,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +35,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CongressionalActivity extends AppCompatActivity {
     //api for google maps
@@ -50,26 +58,7 @@ public class CongressionalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_congressional);
         TextView location = (TextView) findViewById(R.id.loc);
 
-//        // TODO: Use a more specific parent
-//        final ViewGroup parentView = (ViewGroup) getWindow().getDecorView().getRootView();
-//        // TODO: Base this Tweet ID on some data from elsewhere in your app
-//        long tweetId = 631879971628183552L;
-//        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-//            @Override
-//            public void success(Result<Tweet> result) {
-//                TweetView tweetView = new TweetView(CongressionalActivity.this, result.data);
-//                parentView.addView(tweetView);
-//            }
-//
-//            @Override
-//            public void failure(TwitterException exception) {
-//                Log.d("TwitterKit", "Load Tweet failure", exception);
-//            }
-//        });
-
-
         //display location on top, and populate rep list
-        //TODO: data not saved fast enough
         Intent intent = getIntent();
         county = intent.getStringExtra("location").split(", ")[0];
         county = county.substring(0, county.length() - 7);; //Alameda County
@@ -127,21 +116,39 @@ public class CongressionalActivity extends AppCompatActivity {
                             } else { party = "Independent"; }
                             String email = person.getString("oc_email");
                             String website = person.getString("website");
-                            String twitter = person.getString("twitter_id");
                             String term = person.getString("term_end");
                             String id = person.getString("bioguide_id");
-                            PeopleData.people.add(new Representative(id, name, title, party, email,
-                                    website, twitter, term, R.drawable.curry));
-                        }
-                        //set stat text
-                        stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
-                                + " representatives found");
-                        //send info to watch
-                        startWatch();
+                            String twitterId = person.getString("twitter_id");
 
-                        //display view
-                        populateListView();
-                        registerClickCallback();
+                            final Representative tempRep = new Representative(id, name, title, party, email,
+                                    website, "", term, "");
+
+                            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                            StatusesService statusesService = twitterApiClient.getStatusesService();
+
+                            statusesService.userTimeline(null, twitterId, 1, null, null, null, true, null, true, new Callback<List<Tweet>>() {
+                                @Override
+                                public void success(Result<List<Tweet>> result) {
+                                    tempRep.setLastTweet(result.data.get(0).text);
+                                    String tmpUrl = result.data.get(0).user.profileImageUrl;
+                                    tempRep.setPicURL(tmpUrl.replaceAll("normal", "bigger"));
+                                    PeopleData.people.add(tempRep);
+
+                                    //set stat text
+                                    stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
+                                            + " representatives found");
+                                    //send info to watch
+                                    startWatch();
+
+                                    //display view
+                                    populateListView();
+                                    registerClickCallback();
+                                }
+                                @Override
+                                public void failure(TwitterException exception) {
+                                }
+                            });
+                        }
                     } catch (JSONException e) {e.printStackTrace();}
                 }
             }, new Response.ErrorListener() {
@@ -266,16 +273,16 @@ public class CongressionalActivity extends AppCompatActivity {
                     intent.putExtra("party", r.getParty());
                     intent.putExtra("term", r.getTerm());
                     intent.putExtra("role", r.getRole());
-                    intent.putExtra("picID", Integer.toString(r.getPic()));
+                    intent.putExtra("picID", r.getPicURL());
                     intent.putExtra("location", county + ", " + state);
                     startActivity(intent);
                 }
             });
 
             // Fill the view
-
             ImageView imageView = (ImageView)itemView.findViewById(R.id.profile_pic);
-            imageView.setImageResource(r.getPic());
+            imageView.setTag(r.getPicURL());
+            new DownloadImageTask().execute(imageView);
             TextView nameText = (TextView) itemView.findViewById(R.id.name);
             nameText.setText(r.getName());
             TextView roleText = (TextView) itemView.findViewById(R.id.role);
@@ -287,13 +294,12 @@ public class CongressionalActivity extends AppCompatActivity {
             } else if (r.getParty().equals("Independent")) {
                 partyText.setTextColor(Color.parseColor("#4CAF50"));
             }
-            //TODO: email not clickable
             TextView emailText = (TextView) itemView.findViewById(R.id.email);
             emailText.setText(r.getEmail());
             TextView webText = (TextView) itemView.findViewById(R.id.website);
             webText.setText(r.getWebsite());
-            //TextView tweetText = (TextView) itemView.findViewById(R.id.tweet);
-            //tweetText.setText(r.getLastTweet());
+            TextView tweetText = (TextView) itemView.findViewById(R.id.tweet);
+            tweetText.setText(r.getLastTweet());
             return itemView;
         }
     }
