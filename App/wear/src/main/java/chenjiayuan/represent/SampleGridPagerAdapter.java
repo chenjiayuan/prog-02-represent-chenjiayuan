@@ -3,11 +3,11 @@ package chenjiayuan.represent;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.wearable.view.CardFragment;
-    import android.support.wearable.view.FragmentGridPagerAdapter;
+import android.support.wearable.view.FragmentGridPagerAdapter;
 import android.support.wearable.view.GridPagerAdapter;
-import android.view.Gravity;
+import android.view.View;
 
 import java.util.List;
 
@@ -35,26 +35,28 @@ public class SampleGridPagerAdapter extends FragmentGridPagerAdapter {
     // Obtain the UI fragment at the specified position
     @Override
     public Fragment getFragment(int row, int col) {
-        //TODO: fix for demo purpose
         Page page = PAGES[row][col];
         String title = page.titleRes;
         String text = page.textRes;
-        CardFragment fragment = CardFragment.create(title, text, page.iconRes);
+        final MyFragment fragment = new MyFragment();
+        final int r = row;
+        final int c = col;
+        fragment.setTitle(page.titleRes);
+        fragment.setText(page.textRes);
 
-        // Advanced settings
-        fragment.setCardGravity(Gravity.BOTTOM);
-        fragment.setExpansionEnabled(true);
-        fragment.setExpansionDirection(CardFragment.EXPAND_DOWN);
-        fragment.setExpansionFactor(2.0f);
+        fragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if (r == 0) {
+                    Intent intent = new Intent(mContext, WatchToPhoneService.class);
+                    intent.putExtra("mode", "select");
+                    intent.putExtra("index", Integer.toString(c));
+                    mContext.startService(intent);
+                }
+            }
+        });
         return fragment;
     }
-
-    // Obtain the background image for the row
-//    @Override
-//    public Drawable getBackgroundForRow(int row) {
-//        return mContext.getResources().getDrawable(
-//                (BG_IMAGES[row % BG_IMAGES.length]), null);
-//    }
 
     // Obtain the background image for the specific page
     @Override

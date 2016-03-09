@@ -31,6 +31,8 @@ public class DetailActivity extends AppCompatActivity {
         nameText.setText(intent.getStringExtra("name"));
         TextView roleText = (TextView) findViewById(R.id.role);
         roleText.setText(intent.getStringExtra("role"));
+        TextView locationText = (TextView) findViewById(R.id.location);
+        locationText.setText(intent.getStringExtra("location"));
         TextView partyText = (TextView) findViewById(R.id.party);
         partyText.setText(intent.getStringExtra("party"));
         if (intent.getStringExtra("party").equals("Republican")) {

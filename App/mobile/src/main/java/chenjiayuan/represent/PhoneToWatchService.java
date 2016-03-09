@@ -44,7 +44,6 @@ public class PhoneToWatchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Bundle extras = intent.getExtras();
-        //TODO fix hard code issue
         final String data = extras.getString("names") + "/" +
                 extras.getString("parties") + "/" + extras.getString("2012votes");
 

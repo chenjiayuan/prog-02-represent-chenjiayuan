@@ -20,12 +20,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.tweetui.TweetUtils;
-import com.twitter.sdk.android.tweetui.TweetView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,22 +50,22 @@ public class CongressionalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_congressional);
         TextView location = (TextView) findViewById(R.id.loc);
 
-        // TODO: Use a more specific parent
-        final ViewGroup parentView = (ViewGroup) getWindow().getDecorView().getRootView();
-        // TODO: Base this Tweet ID on some data from elsewhere in your app
-        long tweetId = 631879971628183552L;
-        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-            @Override
-            public void success(Result<Tweet> result) {
-                TweetView tweetView = new TweetView(CongressionalActivity.this, result.data);
-                parentView.addView(tweetView);
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Log.d("TwitterKit", "Load Tweet failure", exception);
-            }
-        });
+//        // TODO: Use a more specific parent
+//        final ViewGroup parentView = (ViewGroup) getWindow().getDecorView().getRootView();
+//        // TODO: Base this Tweet ID on some data from elsewhere in your app
+//        long tweetId = 631879971628183552L;
+//        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+//            @Override
+//            public void success(Result<Tweet> result) {
+//                TweetView tweetView = new TweetView(CongressionalActivity.this, result.data);
+//                parentView.addView(tweetView);
+//            }
+//
+//            @Override
+//            public void failure(TwitterException exception) {
+//                Log.d("TwitterKit", "Load Tweet failure", exception);
+//            }
+//        });
 
 
         //display location on top, and populate rep list
@@ -273,6 +267,7 @@ public class CongressionalActivity extends AppCompatActivity {
                     intent.putExtra("term", r.getTerm());
                     intent.putExtra("role", r.getRole());
                     intent.putExtra("picID", Integer.toString(r.getPic()));
+                    intent.putExtra("location", county + ", " + state);
                     startActivity(intent);
                 }
             });

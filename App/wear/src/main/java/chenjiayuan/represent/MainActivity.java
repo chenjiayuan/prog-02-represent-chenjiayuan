@@ -8,11 +8,12 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.view.GridViewPager;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity {
@@ -44,7 +45,7 @@ public class MainActivity extends Activity {
         //create p
         if (intent.getStringExtra("name1") == null) { //no reps
             PageData.p = new Page[][] {
-                {new Page("", "", 0),}
+                {new Page("Represent!", "start with your phone...", 0),}
             };
         } else if (intent.getStringExtra("name4") != null) { //4 person
             PageData.p = new Page[][] {
@@ -67,7 +68,6 @@ public class MainActivity extends Activity {
                 },
                 {
                     new Page("2012 Vote", voteStat, 0),
-                            //Emeryville, CA Obama: 67% of vote Romney 20% of vote
                 }
             };
         }
@@ -91,18 +91,6 @@ public class MainActivity extends Activity {
                 startService(phoneIntent);
             }
         });
-    }
-
-    public void buttonClickHandler(View view) {
-        if (view.getId() == R.id.button) {
-            final GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
-            System.out.println(pager.getCurrentItem().x);
-
-            Intent intent = new Intent(getBaseContext(), WatchToPhoneService.class);
-            intent.putExtra("mode", "select");
-            intent.putExtra("index", Integer.toString(pager.getCurrentItem().x));
-            startService(intent);
-        }
     }
 
     @Override

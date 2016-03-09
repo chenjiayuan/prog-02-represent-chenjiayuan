@@ -43,7 +43,15 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:allowUndo="true" />
             <TextView
-                android:layout_marginTop="50dp"
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:text="@string/location"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:allowUndo="true" />
+            <TextView
+                android:layout_marginTop="30dp"
                 android:id="@+id/party"
                 android:textColor="#2196F3"
                 android:textAppearance="?android:attr/textAppearanceMedium"
