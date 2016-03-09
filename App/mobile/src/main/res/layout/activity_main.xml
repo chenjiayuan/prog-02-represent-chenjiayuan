@@ -101,8 +101,9 @@
     <com.twitter.sdk.android.core.identity.TwitterLoginButton
         android:id="@+id/twitter_login_button"
         android:layout_width="50dp"
-        android:layout_height="40dp"
-        android:layout_alignBottom="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="30dp"
+        android:layout_marginLeft="0dp"
+        android:layout_alignStart="@+id/relativeLayout"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

@@ -66,7 +66,8 @@ public class CongressionalActivity extends AppCompatActivity {
 
 
         if (intent.getStringExtra("mode").equals("zipcode")) {
-            location.setText("Zipcode " + intent.getStringExtra("zipcode"));
+            location.setText(intent.getStringExtra("location"));
+            //location.setText("Zipcode " + intent.getStringExtra("zipcode"));
         } else {
             location.setText(intent.getStringExtra("location"));
         }
@@ -137,18 +138,19 @@ public class CongressionalActivity extends AppCompatActivity {
                                     //set stat text
                                     stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
                                             + " representatives found");
-                                    //send info to watch
-                                    startWatch();
 
                                     //display view
                                     populateListView();
                                     registerClickCallback();
                                 }
+
                                 @Override
                                 public void failure(TwitterException exception) {
                                 }
                             });
                         }
+                        //send info to watch
+                        startWatch();
                     } catch (JSONException e) {e.printStackTrace();}
                 }
             }, new Response.ErrorListener() {
