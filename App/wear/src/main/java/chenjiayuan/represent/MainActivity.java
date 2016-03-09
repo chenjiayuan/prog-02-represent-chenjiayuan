@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
                     new Page(intent.getStringExtra("name4"), intent.getStringExtra("party4"), 0),
                 },
                 {
-                    new Page("2012 Presidential Vote", voteStat, 0)
+                    new Page("2012 Vote", voteStat, 0)
                 }
             };
         } else { //3 person
