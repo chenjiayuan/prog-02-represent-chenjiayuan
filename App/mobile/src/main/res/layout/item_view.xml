@@ -21,7 +21,7 @@
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
         android:background="@android:color/white"
-        android:scaleType="fitXY"
+        android:src="@drawable/unknown"
          />
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="180dp"
@@ -92,6 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
+            android:adjustViewBounds="true"
             android:id="@+id/twitter_logo"
             android:layout_marginRight="5dp"
             android:layout_width="40dp"

@@ -20,6 +20,7 @@
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
             android:background="@android:color/white"
+            android:src="@drawable/unknown"
             />
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="180dp"

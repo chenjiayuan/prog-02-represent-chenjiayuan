@@ -2,7 +2,6 @@ package chenjiayuan.represent;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,7 +34,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,15 +52,11 @@ public class CongressionalActivity extends AppCompatActivity {
     private String county = "Default";
     private String state = "Default";
 
-    private String tweetContent;
-    private String profileURL;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_congressional);
         TextView location = (TextView) findViewById(R.id.loc);
-
         //display location on top, and populate rep list
         Intent intent = getIntent();
         county = intent.getStringExtra("location").split(", ")[0];
@@ -125,27 +119,14 @@ public class CongressionalActivity extends AppCompatActivity {
                                 String term = person.getString("term_end");
                                 String id = person.getString("bioguide_id");
                                 String twitterId = person.getString("twitter_id");
-                                Log.d("T", "==========");
 
-                                TwitterTask twitterInfo = new TwitterTask();
-                                twitterInfo.execute(twitterId);
-                                try {
-                                    ArrayList<String> out = twitterInfo.get();
-                                    Log.d("T", "returned from TwitterTask in try: " + out);
-                                    //tweetContent = twitterInfo.get().get(0);
-                                    //profileURL = twitterInfo.get().get(1);
-                                    //Log.d("T", "returned from TwitterTask: " + tweetContent + profileURL);
-                                } catch (Exception e) {
-                                }
-                                Log.d("T", "returned from TwitterTask: " + tweetContent + profileURL);
                                 PeopleData.people.add(new Representative(id, name, title, party, email,
-                                        website, tweetContent, term, profileURL, twitterId));
+                                        website, "", term, "", twitterId));
                             }
-
                             //set stat text
                             stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
                                     + " representatives found");
-                            //display view
+
                             populateListView();
                             registerClickCallback();
                             //send info to watch
@@ -159,34 +140,6 @@ public class CongressionalActivity extends AppCompatActivity {
                     }
                 });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-    }
-
-    private class TwitterTask extends AsyncTask<String, Void, ArrayList<String>> {
-        private ArrayList<String> results = new ArrayList<String>(2);
-
-        protected ArrayList<String> doInBackground(String... twitterId) {
-            try {
-                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-                StatusesService statusesService = twitterApiClient.getStatusesService();
-
-                statusesService.userTimeline(null, twitterId[0], 1, null, null, null, true, null, true, new Callback<List<Tweet>>() {
-                    @Override
-                    public void success(Result<List<Tweet>> result) {
-                        String t = result.data.get(0).text;
-                        String image = result.data.get(0).user.profileImageUrl.replaceAll("normal", "bigger");
-                        results.add(t);
-                        results.add(image);
-                    }
-                    @Override
-                    public void failure(TwitterException exception) {
-                    }
-                });
-            } catch (Exception e) {
-                Log.d("T", "");
-            }
-            Log.d("T", "TwitterTask returned: " + results);
-            return results;
-        }
     }
 
     private void startWatch() {
@@ -292,8 +245,25 @@ public class CongressionalActivity extends AppCompatActivity {
             if (itemView == null) {
                 itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
-            Button btn = (Button) itemView.findViewById(R.id.moreInfoButton);
             final Representative r = PeopleData.people.get(position);
+
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            StatusesService statusesService = twitterApiClient.getStatusesService();
+
+            statusesService.userTimeline(null, r.getTwitterID(), 1, null, null, null, true, null, true, new Callback<List<Tweet>>() {
+                @Override
+                public void success(Result<List<Tweet>> result) {
+                    r.setLastTweet(result.data.get(0).text);
+                    String tmpUrl = result.data.get(0).user.profileImageUrl;
+                    r.setPicURL(tmpUrl.replaceAll("normal", "bigger"));
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                }
+            });
+
+            Button btn = (Button) itemView.findViewById(R.id.moreInfoButton);
             btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(CongressionalActivity.this, DetailActivity.class);
@@ -361,3 +331,4 @@ public class CongressionalActivity extends AppCompatActivity {
         }
     }
 }
+
