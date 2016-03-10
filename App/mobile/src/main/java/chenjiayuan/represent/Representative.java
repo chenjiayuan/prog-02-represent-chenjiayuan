@@ -13,9 +13,10 @@ public class Representative {
     private String lastTweet;
     private String term;
     private String picURL;
+    private String twitterID;
 
     public Representative(String id, String name, String role, String party, String email,
-                          String website, String lastTweet, String term, String picURL) {
+                          String website, String lastTweet, String term, String picURL, String twitterID) {
         super();
         this.id = id;
         this.name = name;
@@ -26,6 +27,7 @@ public class Representative {
         this.lastTweet = lastTweet;
         this.term = term;
         this.picURL = picURL;
+        this.twitterID = twitterID;
     }
 
     public String getId() {
@@ -52,6 +54,9 @@ public class Representative {
     }
     public String getPicURL() {
         return picURL;
+    }
+    public String getTwitterID() {
+        return twitterID;
     }
     public void setLastTweet(String t) {
         this.lastTweet = t;

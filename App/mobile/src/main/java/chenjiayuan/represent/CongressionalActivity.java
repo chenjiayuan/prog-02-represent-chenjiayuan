@@ -2,6 +2,7 @@ package chenjiayuan.represent;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,9 @@ public class CongressionalActivity extends AppCompatActivity {
     private String mParties = "defaultParties";
     private String county = "Default";
     private String state = "Default";
+
+    private String tweetContent;
+    private String profileURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,74 +97,96 @@ public class CongressionalActivity extends AppCompatActivity {
         final TextView stat = (TextView) findViewById(R.id.ppl);
         PeopleData.people = new ArrayList<Representative>();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
-            (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jRepList) {
-                    try{
-                        //update number of representatives received
-                        totalNum = jRepList.getInt("count");
-                        JSONArray results = jRepList.optJSONArray("results");
+                (Request.Method.GET, request, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jRepList) {
+                        try{
+                            //update number of representatives received
+                            totalNum = jRepList.getInt("count");
+                            JSONArray results = jRepList.optJSONArray("results");
 
-                        //add people to PeopleData
-                        for (int i=0; i<totalNum; i++) {
-                            JSONObject person = results.getJSONObject(i);
-                            String name = person.getString("first_name")+" "+person.getString("last_name");
-                            String title;
-                            if (person.getString("title").equals("Sen")){
-                                title = "Senator";
-                                sNum++;
-                            } else { title = "Representative"; }
-                            String party;
-                            if (person.getString("party").equals("R")){
-                                party = "Republican";
-                            } else if (person.getString("party").equals("D")) {
-                                party = "Democrat";
-                            } else { party = "Independent"; }
-                            String email = person.getString("oc_email");
-                            String website = person.getString("website");
-                            String term = person.getString("term_end");
-                            String id = person.getString("bioguide_id");
-                            String twitterId = person.getString("twitter_id");
+                            //add people to PeopleData
+                            for (int i=0; i<totalNum; i++) {
+                                JSONObject person = results.getJSONObject(i);
+                                String name = person.getString("first_name")+" "+person.getString("last_name");
+                                String title;
+                                if (person.getString("title").equals("Sen")){
+                                    title = "Senator";
+                                    sNum++;
+                                } else { title = "Representative"; }
+                                String party;
+                                if (person.getString("party").equals("R")){
+                                    party = "Republican";
+                                } else if (person.getString("party").equals("D")) {
+                                    party = "Democrat";
+                                } else { party = "Independent"; }
+                                String email = person.getString("oc_email");
+                                String website = person.getString("website");
+                                String term = person.getString("term_end");
+                                String id = person.getString("bioguide_id");
+                                String twitterId = person.getString("twitter_id");
+                                Log.d("T", "==========");
 
-                            final Representative tempRep = new Representative(id, name, title, party, email,
-                                    website, "", term, "");
-
-                            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-                            StatusesService statusesService = twitterApiClient.getStatusesService();
-
-                            statusesService.userTimeline(null, twitterId, 1, null, null, null, true, null, true, new Callback<List<Tweet>>() {
-                                @Override
-                                public void success(Result<List<Tweet>> result) {
-                                    tempRep.setLastTweet(result.data.get(0).text);
-                                    String tmpUrl = result.data.get(0).user.profileImageUrl;
-                                    tempRep.setPicURL(tmpUrl.replaceAll("normal", "bigger"));
-                                    PeopleData.people.add(tempRep);
-
-                                    //set stat text
-                                    stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
-                                            + " representatives found");
-
-                                    //display view
-                                    populateListView();
-                                    registerClickCallback();
+                                TwitterTask twitterInfo = new TwitterTask();
+                                twitterInfo.execute(twitterId);
+                                try {
+                                    ArrayList<String> out = twitterInfo.get();
+                                    Log.d("T", "returned from TwitterTask in try: " + out);
+                                    //tweetContent = twitterInfo.get().get(0);
+                                    //profileURL = twitterInfo.get().get(1);
+                                    //Log.d("T", "returned from TwitterTask: " + tweetContent + profileURL);
+                                } catch (Exception e) {
                                 }
+                                Log.d("T", "returned from TwitterTask: " + tweetContent + profileURL);
+                                PeopleData.people.add(new Representative(id, name, title, party, email,
+                                        website, tweetContent, term, profileURL, twitterId));
+                            }
 
-                                @Override
-                                public void failure(TwitterException exception) {
-                                }
-                            });
-                        }
-                        //send info to watch
-                        startWatch();
-                    } catch (JSONException e) {e.printStackTrace();}
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // TODO Auto-generated method stub
-                }
-            });
+                            //set stat text
+                            stat.setText(Integer.toString(sNum) + " senators and " + Integer.toString(totalNum - sNum)
+                                    + " representatives found");
+                            //display view
+                            populateListView();
+                            registerClickCallback();
+                            //send info to watch
+                            startWatch();
+                        } catch (JSONException e) {e.printStackTrace();}
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                    }
+                });
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+    }
+
+    private class TwitterTask extends AsyncTask<String, Void, ArrayList<String>> {
+        private ArrayList<String> results = new ArrayList<String>(2);
+
+        protected ArrayList<String> doInBackground(String... twitterId) {
+            try {
+                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                StatusesService statusesService = twitterApiClient.getStatusesService();
+
+                statusesService.userTimeline(null, twitterId[0], 1, null, null, null, true, null, true, new Callback<List<Tweet>>() {
+                    @Override
+                    public void success(Result<List<Tweet>> result) {
+                        String t = result.data.get(0).text;
+                        String image = result.data.get(0).user.profileImageUrl.replaceAll("normal", "bigger");
+                        results.add(t);
+                        results.add(image);
+                    }
+                    @Override
+                    public void failure(TwitterException exception) {
+                    }
+                });
+            } catch (Exception e) {
+                Log.d("T", "");
+            }
+            Log.d("T", "TwitterTask returned: " + results);
+            return results;
+        }
     }
 
     private void startWatch() {
@@ -334,4 +361,3 @@ public class CongressionalActivity extends AppCompatActivity {
         }
     }
 }
-
